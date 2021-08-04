@@ -1,0 +1,28 @@
+@page "/OWFInterface"
+@inject IJSRuntime JS
+@inject OWFBlazorDemo.Services.AppState AppState
+
+<h1>Call OWF <code>OWFInterface</code> Function</h1>
+
+<p>
+    <button @onclick="UserProfile">Show User Info</button>
+</p>
+
+<p>
+    @text
+</p>
+
+@code {
+    private MarkupString text;
+
+    private async Task UserProfile()
+        {
+            Console.WriteLine("....11....");
+        }
+
+    [JSInvokable]
+    public static Task<int[]> ReturnMapViewStatus()
+    {
+        return Task.FromResult(new int[] { 1, 2, 3 });
+    }
+}
