@@ -1,4 +1,6 @@
 @page "/counter"
+@using System.Diagnostics
+@implements IDisposable
 @inject IJSRuntime JS
 @inject OWFBlazorDemo.Services.AppState AppState
 
@@ -8,16 +10,49 @@
 
 <button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
 
+<p>
+    <code>Map View</code>: @text
+</p>
+
 @code {
+    private readonly DotNetObjectReference<Counter> _objeRef;
     private int currentCount = 0;
+    private string text { get; set; }
 
     [Parameter]
     public int IncrementAmount { get; set; } = 1;
 
+    public Counter()
+    {
+        _objeRef = DotNetObjectReference.Create(this);
+    }
+
     private async Task IncrementCount()
     {
         currentCount += IncrementAmount;
-
         await JS.InvokeVoidAsync("OWF.Eventing.publish", "counter.push", "{'counter': " + currentCount + "}");
+    }
+
+    [JSInvokable]
+    public Task<string> GetMapViewStatus(string mapView)
+    {
+        text = mapView;
+        base.StateHasChanged();
+        
+        return Task.FromResult("Done");
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JS.InvokeVoidAsync("MapViewStatus.start", _objeRef);
+        }
+    }
+
+    async void IDisposable.Dispose()
+    {
+        await JS.InvokeVoidAsync("MapViewStatus.stop");    
+        _objeRef.Dispose();
     }
 }

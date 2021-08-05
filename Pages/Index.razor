@@ -6,11 +6,13 @@
 
 Welcome to your new app.
 
-<SurveyPrompt Title="How is Blazor working for you?" />
 @code
 {
     protected override void OnAfterRender(bool firstRender)
     {
-        JS.InvokeVoidAsync("attachHandlers");
+        if (firstRender)
+        {
+            JS.InvokeVoidAsync("attachHandlers");
+        }
     }
 }

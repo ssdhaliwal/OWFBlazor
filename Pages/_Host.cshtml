@@ -45,30 +45,42 @@
     <script src="_framework/blazor.server.js" autostart="false"></script>
     <script>
         var self = this;
-        receiveMapStatusView = function (sender, msg) {
-                var self = this;
-                // console.log("+receiveMapStatusView");
+        self._objects = {};
 
+        receiveMapStatusView = function (sender, message) {
                 var senderId = JSON.parse(sender);
                 if (senderId.id === OWF.getInstanceId()) {
                     return false;
                 }
 
                 // store the map zoom level
-                var jsonMsg = JSON.parse(msg);
-                console.log(jsonMsg);
+                console.log(message);
+                console.log("1001-02");
+                if (self._objects.hasOwnProperty("dotnetInstance") && self._objects.dotnetInstance) {
+                    console.log("1001-03");
+                    const result = self._objects.dotnetInstance.invokeMethodAsync('GetMapViewStatus', message);
+                    console.log(result);
+                }
+        };
+
+        window.MapViewStatus = {
+            start: (objRef) => {
+                console.log("1001-00");
+                self._objects.dotnetInstance = objRef;
+            },
+            stop: () => {
+                console.log("1001-01");
+                delete self._objects.dotnetInstance;
+            }
         };
 
         window.attachHandlers = () => {
-            console.log("1001");
-            
             OWF.relayFile = "js/eventing/rpc_relay.uncompressed.html?deployVer=1.2.0";
             owfdojo.config.dojoBlankHtmlUrl = "js/dojo-1.5.0-windowname-only/dojo/resources/blank.html?deployVer=1.2.0";
 
             OWF.Eventing.subscribe("map.status.view", owfdojo.hitch(self, "receiveMapStatusView"));
-
-            console.log(OWF);
         };
+
         Blazor.start();
     </script>
 </body>

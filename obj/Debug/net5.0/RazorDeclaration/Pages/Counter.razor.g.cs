@@ -82,8 +82,15 @@ using OWFBlazorDemo.Shared;
 #line default
 #line hidden
 #nullable disable
+#nullable restore
+#line 2 "E:\home\development\blazer\OWFBlazorDemo\Pages\Counter.razor"
+using System.Diagnostics;
+
+#line default
+#line hidden
+#nullable disable
     [Microsoft.AspNetCore.Components.RouteAttribute("/counter")]
-    public partial class Counter : Microsoft.AspNetCore.Components.ComponentBase
+    public partial class Counter : Microsoft.AspNetCore.Components.ComponentBase, IDisposable
     {
         #pragma warning disable 1998
         protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder __builder)
@@ -91,18 +98,47 @@ using OWFBlazorDemo.Shared;
         }
         #pragma warning restore 1998
 #nullable restore
-#line 11 "E:\home\development\blazer\OWFBlazorDemo\Pages\Counter.razor"
+#line 17 "E:\home\development\blazer\OWFBlazorDemo\Pages\Counter.razor"
        
+    private readonly DotNetObjectReference<Counter> _objeRef;
     private int currentCount = 0;
+    private string text { get; set; }
 
     [Parameter]
     public int IncrementAmount { get; set; } = 1;
 
+    public Counter()
+    {
+        _objeRef = DotNetObjectReference.Create(this);
+    }
+
     private async Task IncrementCount()
     {
         currentCount += IncrementAmount;
-
         await JS.InvokeVoidAsync("OWF.Eventing.publish", "counter.push", "{'counter': " + currentCount + "}");
+    }
+
+    [JSInvokable]
+    public Task<string> GetMapViewStatus(string mapView)
+    {
+        text = mapView;
+        base.StateHasChanged();
+        
+        return Task.FromResult("Done");
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JS.InvokeVoidAsync("MapViewStatus.start", _objeRef);
+        }
+    }
+
+    async void IDisposable.Dispose()
+    {
+        await JS.InvokeVoidAsync("MapViewStatus.stop");    
+        _objeRef.Dispose();
     }
 
 #line default

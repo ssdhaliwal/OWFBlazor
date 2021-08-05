@@ -91,11 +91,14 @@ using OWFBlazorDemo.Shared;
         }
         #pragma warning restore 1998
 #nullable restore
-#line 11 "E:\home\development\blazer\OWFBlazorDemo\Pages\Index.razor"
+#line 10 "E:\home\development\blazer\OWFBlazorDemo\Pages\Index.razor"
  
     protected override void OnAfterRender(bool firstRender)
     {
-        JS.InvokeVoidAsync("attachHandlers");
+        if (firstRender)
+        {
+            JS.InvokeVoidAsync("attachHandlers");
+        }
     }
 
 #line default

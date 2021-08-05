@@ -93,17 +93,10 @@ using OWFBlazorDemo.Shared;
 #nullable restore
 #line 15 "E:\home\development\blazer\OWFBlazorDemo\Pages\OWFInterface.razor"
        
-    private MarkupString text;
+    private string text = "";
 
     private async Task UserProfile()
-        {
-            Console.WriteLine("....11....");
-        }
-
-    [JSInvokable]
-    public static Task<int[]> ReturnMapViewStatus()
     {
-        return Task.FromResult(new int[] { 1, 2, 3 });
     }
 
 #line default
