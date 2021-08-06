@@ -90,7 +90,7 @@ using OWFBlazorDemo.Shared;
         }
         #pragma warning restore 1998
 #nullable restore
-#line 28 "E:\home\development\blazer\OWFBlazorDemo\Shared\NavMenu.razor"
+#line 33 "E:\home\development\blazer\OWFBlazorDemo\Shared\NavMenu.razor"
        
     private bool collapseNavMenu = true;
 

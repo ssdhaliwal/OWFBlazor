@@ -4,11 +4,15 @@ namespace OWFBlazorDemo.Services
 {
     public class AppState
     {
-        public int Age { get; set; }
         Dictionary<string, object> ObjectRepo = new Dictionary<string, object>();
+        
+        public object get(string key, object defaultValue = null) {
+            object value = null;
+            if (ObjectRepo.ContainsKey(key)) {
+                value = ObjectRepo[key];
+            }
 
-        public object get(string key) {
-            return ObjectRepo[key];
+            return ((value != null) ? value : defaultValue);
         }
 
         public void set(string key, object value) {

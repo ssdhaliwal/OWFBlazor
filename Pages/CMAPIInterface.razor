@@ -1,12 +1,12 @@
-@page "/owfInterface"
+@page "/cmapiInterface"
 @implements IDisposable
 @inject IJSRuntime JS
 @inject OWFBlazorDemo.Services.AppState AppState
 
-<h1>Call OWF <code>OWFInterface</code> Function</h1>
+<h1>Call CMAPI <code>CMAPIInterface</code> Function</h1>
 
 <p>
-    <button @onclick="UserProfile">Show User Info</button>
+    <button @onclick="MAPStatus">Show Map Status (View)</button>
 </p>
 
 <p>
@@ -23,14 +23,14 @@
         }
     }
 
-    public OWFInterface()
+    public CMAPIInterface()
     {
     }
 
-    private async Task UserProfile()
+    private async Task MAPStatus()
     {
     }
-    
+
     async void IDisposable.Dispose()
     {
     }

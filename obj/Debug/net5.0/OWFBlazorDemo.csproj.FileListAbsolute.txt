@@ -56,3 +56,5 @@ E:\home\development\blazer\OWFBlazorDemo\obj\Debug\net5.0\ref\OWFBlazorDemo.dll
 E:\home\development\blazer\OWFBlazorDemo\obj\Debug\net5.0\OWFBlazorDemo.pdb
 E:\home\development\blazer\OWFBlazorDemo\obj\Debug\net5.0\OWFBlazorDemo.genruntimeconfig.cache
 E:\home\development\blazer\OWFBlazorDemo\obj\Debug\net5.0\OWFBlazorDemo.csproj.CopyComplete
+E:\home\development\blazer\OWFBlazorDemo\obj\Debug\net5.0\RazorDeclaration\Pages\CMAPIInterface.razor.g.cs
+E:\home\development\blazer\OWFBlazorDemo\obj\Debug\net5.0\Razor\Pages\CMAPIInterface.razor.g.cs

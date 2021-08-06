@@ -98,7 +98,7 @@ using System.Diagnostics;
         }
         #pragma warning restore 1998
 #nullable restore
-#line 17 "E:\home\development\blazer\OWFBlazorDemo\Pages\Counter.razor"
+#line 19 "E:\home\development\blazer\OWFBlazorDemo\Pages\Counter.razor"
        
     private readonly DotNetObjectReference<Counter> _objeRef;
     private int currentCount = 0;
@@ -106,6 +106,23 @@ using System.Diagnostics;
 
     [Parameter]
     public int IncrementAmount { get; set; } = 1;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (AppState == null) {
+            System.Console.WriteLine("App State is NULL");
+        }
+
+        currentCount = (int)AppState.get("counter", 0);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JS.InvokeVoidAsync("MapViewStatus.start", _objeRef);
+        }
+    }
 
     public Counter()
     {
@@ -115,7 +132,25 @@ using System.Diagnostics;
     private async Task IncrementCount()
     {
         currentCount += IncrementAmount;
-        await JS.InvokeVoidAsync("OWF.Eventing.publish", "counter.push", "{'counter': " + currentCount + "}");
+        AppState.set("counter", currentCount);
+
+        await JS.InvokeVoidAsync("OWF.Eventing.publish", "counter.push", "{'counter': " + currentCount + ",'status': 'increment'}");
+    }
+
+    private async Task DecrementCount()
+    {
+        currentCount -= IncrementAmount;
+        AppState.set("counter", currentCount);
+
+        await JS.InvokeVoidAsync("OWF.Eventing.publish", "counter.push", "{'counter': " + currentCount + ",'status': 'decrement'}");
+    }
+
+    private async Task ResetCount()
+    {
+        currentCount = 0;
+        AppState.set("counter", currentCount);
+
+        await JS.InvokeVoidAsync("OWF.Eventing.publish", "counter.push", "{'counter': " + currentCount + ",'status': 'reset'}");
     }
 
     [JSInvokable]
@@ -125,14 +160,6 @@ using System.Diagnostics;
         base.StateHasChanged();
         
         return Task.FromResult("Done");
-    }
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            await JS.InvokeVoidAsync("MapViewStatus.start", _objeRef);
-        }
     }
 
     async void IDisposable.Dispose()

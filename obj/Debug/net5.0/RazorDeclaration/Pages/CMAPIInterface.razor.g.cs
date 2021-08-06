@@ -82,8 +82,8 @@ using OWFBlazorDemo.Shared;
 #line default
 #line hidden
 #nullable disable
-    [Microsoft.AspNetCore.Components.RouteAttribute("/owfInterface")]
-    public partial class OWFInterface : Microsoft.AspNetCore.Components.ComponentBase, IDisposable
+    [Microsoft.AspNetCore.Components.RouteAttribute("/cmapiInterface")]
+    public partial class CMAPIInterface : Microsoft.AspNetCore.Components.ComponentBase, IDisposable
     {
         #pragma warning disable 1998
         protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder __builder)
@@ -91,7 +91,7 @@ using OWFBlazorDemo.Shared;
         }
         #pragma warning restore 1998
 #nullable restore
-#line 16 "E:\home\development\blazer\OWFBlazorDemo\Pages\OWFInterface.razor"
+#line 16 "E:\home\development\blazer\OWFBlazorDemo\Pages\CMAPIInterface.razor"
        
     private string text = "";
 
@@ -102,14 +102,14 @@ using OWFBlazorDemo.Shared;
         }
     }
 
-    public OWFInterface()
+    public CMAPIInterface()
     {
     }
 
-    private async Task UserProfile()
+    private async Task MAPStatus()
     {
     }
-    
+
     async void IDisposable.Dispose()
     {
     }
