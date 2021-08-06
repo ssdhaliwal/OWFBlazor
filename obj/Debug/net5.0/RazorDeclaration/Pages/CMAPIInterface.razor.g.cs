@@ -106,6 +106,14 @@ using OWFBlazorDemo.Shared;
     {
     }
 
+    // plot marker on map
+    // plot line on map
+    // plot polygon on map
+    // plot complex kml on map
+    // plot line with starting position, bearing/heading, distance
+    // plot buffer on map
+    // listen to map click (location capture)
+
     private async Task MAPStatus()
     {
     }

@@ -91,8 +91,9 @@ using OWFBlazorDemo.Shared;
         }
         #pragma warning restore 1998
 #nullable restore
-#line 16 "E:\home\development\blazer\OWFBlazorDemo\Pages\OWFInterface.razor"
+#line 17 "E:\home\development\blazer\OWFBlazorDemo\Pages\OWFInterface.razor"
        
+    private string uuid = "{}";
     private string text = "";
 
     protected override async Task OnInitializedAsync()
@@ -106,8 +107,13 @@ using OWFBlazorDemo.Shared;
     {
     }
 
+    // get user profile info
+    // store settings
+    // restore settings
+
     private async Task UserProfile()
     {
+        // string uuidObject = await JS.InvokeAsync<string>("SaveUserConfig", "b29ce96f-ba7a-a0a3-1bbd-9c2badb6a9fb");
     }
     
     async void IDisposable.Dispose()

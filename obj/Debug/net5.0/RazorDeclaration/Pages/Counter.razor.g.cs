@@ -98,7 +98,7 @@ using System.Diagnostics;
         }
         #pragma warning restore 1998
 #nullable restore
-#line 19 "E:\home\development\blazer\OWFBlazorDemo\Pages\Counter.razor"
+#line 27 "E:\home\development\blazer\OWFBlazorDemo\Pages\Counter.razor"
        
     private readonly DotNetObjectReference<Counter> _objeRef;
     private int currentCount = 0;
@@ -120,7 +120,7 @@ using System.Diagnostics;
     {
         if (firstRender)
         {
-            await JS.InvokeVoidAsync("MapViewStatus.start", _objeRef);
+            await JS.InvokeVoidAsync("NotificationManager.register", _objeRef);
         }
     }
 
@@ -153,8 +153,18 @@ using System.Diagnostics;
         await JS.InvokeVoidAsync("OWF.Eventing.publish", "counter.push", "{'counter': " + currentCount + ",'status': 'reset'}");
     }
 
+    private async Task StartMapStatus()
+    {
+        await JS.InvokeVoidAsync("NotificationManager.start", "map.status.view");
+    }
+
+    private async Task StopMapStatus()
+    {
+        await JS.InvokeVoidAsync("NotificationManager.stop", "map.status.view");
+    }
+
     [JSInvokable]
-    public Task<string> GetMapViewStatus(string mapView)
+    public Task<string> GetMapStatusView(string mapView)
     {
         text = mapView;
         base.StateHasChanged();
@@ -164,7 +174,8 @@ using System.Diagnostics;
 
     async void IDisposable.Dispose()
     {
-        await JS.InvokeVoidAsync("MapViewStatus.stop");    
+        await JS.InvokeVoidAsync("NotificationManager.stop", "map.status.view");
+        await JS.InvokeVoidAsync("NotificationManager.deregister");    
         _objeRef.Dispose();
     }
 

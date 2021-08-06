@@ -45,7 +45,48 @@
     <script src="_framework/blazor.server.js" autostart="false"></script>
     <script>
         var self = this;
-        self._objects = {};
+        self._objects = {
+            namespace: "rescue21.uscg.mil",
+            uuid: "",
+            dotnetInstance: null,
+            channels: []
+        };
+
+        retrieveUserConfig = function (key) {
+            OWF.Preferences.getUserPreference({
+                namespace: self._objects.namespace,
+                name: key,
+                onSuccess: owfdojo.hitch(self, "onGetUserConfigSuccess"),
+                onFailure: owfdojo.hitch(self, "onGetUserConfigFailure")
+            });
+        };
+
+        onGetUserConfigSuccess = function (pref) {
+            self._objects.uuid = JSON.parse(pref.value);
+        };
+
+        onGetUserConfigFailure = function (error, status) {
+            console.log("!ERROR! - cannot retrieve user configuration/" + status + "/" + error);
+            self._objects.uuid = "{error}";
+        };
+
+        saveUserConfig = function (key, value) {
+            OWF.Preferences.setUserPreference({
+                namespace: self._objects.namespace,
+                name: key,
+                value: JSON.stringify(value),
+                onSuccess: owfdojo.hitch(self, "onSetUserConfigSuccess", key, value),
+                onFailure: owfdojo.hitch(self, "onSetUserConfigFailure")
+            });
+        };
+
+        onSetUserConfigSuccess = function (key, value, returnValue, error) {
+            console.log(key, value, returnValue)
+        };
+
+        onSetUserConfigFailure = function (error, status) {
+            console.log("!ERROR! - cannot retrieve user configuration/" + status + "/" + error);
+        };
 
         receiveMapStatusView = function (sender, message) {
                 var senderId = JSON.parse(sender);
@@ -54,23 +95,31 @@
                 }
 
                 // store the map zoom level
-                console.log(message);
-                console.log("1001-02");
-                if (self._objects.hasOwnProperty("dotnetInstance") && self._objects.dotnetInstance) {
-                    console.log("1001-03");
-                    const result = self._objects.dotnetInstance.invokeMethodAsync('GetMapViewStatus', message);
-                    console.log(result);
+                if (self._objects.hasOwnProperty("dotnetInstance") && self._objects.dotnetInstance &&
+                    (self._objects.channels.indexOf("map.status.view") >= 0)) {
+                    const result = self._objects.dotnetInstance.invokeMethodAsync('GetMapStatusView', message);
                 }
         };
 
-        window.MapViewStatus = {
-            start: (objRef) => {
-                console.log("1001-00");
+        window.NotificationManager = {
+            register: (objRef) => {
                 self._objects.dotnetInstance = objRef;
             },
-            stop: () => {
-                console.log("1001-01");
-                delete self._objects.dotnetInstance;
+            start: (channel) => {
+                let index = self._objects.channels.indexOf(channel);
+                if (index < 0) {
+                    self._objects.channels.push(channel);
+                }
+            },
+            stop: (channel) => {
+                let index = self._objects.channels.indexOf(channel);
+                if (index >= 0) {
+                    self._objects.channels.splice(index);
+                }
+            },
+            deregister: () => {
+                self._objects.channels = [];
+                self._objects.dotnetInstance = null;
             }
         };
 

@@ -10,10 +10,12 @@
 </p>
 
 <p>
+    <code>UUID</code>: @uuid
     @text
 </p>
 
 @code {
+    private string uuid = "{}";
     private string text = "";
 
     protected override async Task OnInitializedAsync()
@@ -27,8 +29,13 @@
     {
     }
 
+    // get user profile info
+    // store settings
+    // restore settings
+
     private async Task UserProfile()
     {
+        // string uuidObject = await JS.InvokeAsync<string>("SaveUserConfig", "b29ce96f-ba7a-a0a3-1bbd-9c2badb6a9fb");
     }
     
     async void IDisposable.Dispose()

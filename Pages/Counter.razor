@@ -12,6 +12,14 @@
 <button class="btn btn-primary" @onclick="DecrementCount">- Decrement</button>&nbsp;
 <button class="btn btn-primary" @onclick="ResetCount">0 Reset</button>
 
+<br/>
+<br/>
+
+<button class="btn btn-primary" @onclick="StartMapStatus">Start Map Status</button>&nbsp;
+<button class="btn btn-primary" @onclick="StopMapStatus">Stop Map Status</button>&nbsp;
+<br/>
+<br/>
+
 <p>
     <code>Map View</code>: @text
 </p>
@@ -37,7 +45,7 @@
     {
         if (firstRender)
         {
-            await JS.InvokeVoidAsync("MapViewStatus.start", _objeRef);
+            await JS.InvokeVoidAsync("NotificationManager.register", _objeRef);
         }
     }
 
@@ -70,8 +78,18 @@
         await JS.InvokeVoidAsync("OWF.Eventing.publish", "counter.push", "{'counter': " + currentCount + ",'status': 'reset'}");
     }
 
+    private async Task StartMapStatus()
+    {
+        await JS.InvokeVoidAsync("NotificationManager.start", "map.status.view");
+    }
+
+    private async Task StopMapStatus()
+    {
+        await JS.InvokeVoidAsync("NotificationManager.stop", "map.status.view");
+    }
+
     [JSInvokable]
-    public Task<string> GetMapViewStatus(string mapView)
+    public Task<string> GetMapStatusView(string mapView)
     {
         text = mapView;
         base.StateHasChanged();
@@ -81,7 +99,8 @@
 
     async void IDisposable.Dispose()
     {
-        await JS.InvokeVoidAsync("MapViewStatus.stop");    
+        await JS.InvokeVoidAsync("NotificationManager.stop", "map.status.view");
+        await JS.InvokeVoidAsync("NotificationManager.deregister");    
         _objeRef.Dispose();
     }
 }
