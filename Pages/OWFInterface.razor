@@ -6,39 +6,79 @@
 <h1>Call OWF <code>OWFInterface</code> Function</h1>
 
 <p>
-    <button @onclick="UserProfile">Show User Info</button>
+
 </p>
 
 <p>
     <code>UUID</code>: @uuid
+    <br />
+    <code>User</code>: @user
     @text
 </p>
 
 @code {
-    private string uuid = "{}";
+    private readonly DotNetObjectReference<OWFInterface> _objeRef;
+    private string uuid = "";
+    private string user = "";
     private string text = "";
 
     protected override async Task OnInitializedAsync()
     {
-        if (AppState == null) {
+        if (AppState == null)
+        {
             System.Console.WriteLine("App State is NULL");
+        }
+
+        uuid = (string)AppState.get("uuid", "");
+        user = (string)AppState.get("user", "");
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JS.InvokeVoidAsync("NotificationManager.register", _objeRef);
+
+            if (uuid == "")
+            {
+                await JS.InvokeVoidAsync("NotificationManager.start", "owf.user.uuid", "GetUserUUID", true);
+            }
         }
     }
 
     public OWFInterface()
     {
+        _objeRef = DotNetObjectReference.Create(this);
     }
 
-    // get user profile info
-    // store settings
-    // restore settings
-
-    private async Task UserProfile()
+    [JSInvokable]
+    public async Task GetUserUUID(string message)
     {
-        // string uuidObject = await JS.InvokeAsync<string>("SaveUserConfig", "b29ce96f-ba7a-a0a3-1bbd-9c2badb6a9fb");
+        uuid = message;
+        base.StateHasChanged();
+
+        AppState.set("uuid", uuid);
+        JS.InvokeVoidAsync("NotificationManager.stop", "owf.user.uuid");
+
+        await JS.InvokeVoidAsync("NotificationManager.start", "owf.user", "GetUser", true);
     }
-    
+
+    [JSInvokable]
+    public Task<string> GetUser(string message)
+    {
+        user = message;
+        base.StateHasChanged();
+
+        AppState.set("user", user);
+        JS.InvokeVoidAsync("NotificationManager.stop", "owf.user");
+
+        return Task.FromResult("Done");
+    }
+
     async void IDisposable.Dispose()
     {
+        JS.InvokeVoidAsync("NotificationManager.deregister");
+        _objeRef.Dispose();
     }
+
 }

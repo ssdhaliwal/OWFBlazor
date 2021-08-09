@@ -47,30 +47,181 @@
         var self = this;
         self._objects = {
             namespace: "rescue21.uscg.mil",
-            uuid: "",
+            owfInstance: "https://localhost:8443/",
             dotnetInstance: null,
-            channels: []
+            channels: {},
+            userProfile: {
+                uuid: ""
+            }
         };
 
-        retrieveUserConfig = function (key) {
+        /*
+        + Utility Functions
+        */
+
+        executeFunctionByName = function (functionName, context /*, args */) {
+            let args = Array.prototype.slice.call(arguments, 2);
+            let namespaces = functionName.split(".");
+            let func = namespaces.pop();
+
+            for(let i = 0; i < namespaces.length; i++) {
+                context = context[namespaces[i]];
+            }
+
+            return context[func].apply(context, args);
+        };
+
+        // https://stackoverflow.com/questions/105034/how-to-create-a-guid-uuid
+        guid = function() {
+            return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
+                (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+            );
+        };
+
+        ajaxCall = function (url, data, callback, stateChange, type,
+            contentType, id) {
+            // fix input vars if not defined
+            if ((data === undefined) || (data === null) || (!data)) {
+                data = {};
+            }
+
+            if ((callback === undefined) || (callback === null) || (!callback)) {
+                callback = function () { };
+            }
+
+            if ((stateChange === undefined) || (stateChange === null) || (!stateChange)) {
+                stateChange = function () { };
+            }
+
+            if ((type === undefined) || (type === null) || (!type)) {
+                type = 'GET';
+            }
+
+            // initiate the call
+            var req = new XMLHttpRequest();
+            req.onreadystatechange = function () {
+                stateChange({
+                    state: req.readyState,
+                    status: req.status
+                });
+
+                if (req.readyState === 4 && req.status === 200) {
+                    if (contentType === "application/octet-stream") {
+                        return callback({
+                            "id": id,
+                            "payload": (req.response || req.responseText)
+                        });
+                    } else {
+                        return callback({
+                            "id": id,
+                            "payload": req.responseText
+                        });
+                    }
+                }
+            };
+
+            req.open(type, url, true);
+            req.withCredentials = true;
+            //req.setRequestHeader("Cache-Control", "max-age=0");
+
+            //req.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+            //req.setRequestHeader("Content-type", "application/json");
+            if (!contentType) {
+                req.overrideMimeType("text/plain");
+                req.setRequestHeader("Content-type", "text/plain");
+            } else {
+                req.overrideMimeType(contentType);
+                req.setRequestHeader("Content-type", contentType);
+
+                if (contentType === "application/octet-stream") {
+                    req.overrideMimeType("text/plain; charset=x-user-defined");
+                    req.responseType = "arrayBuffer";
+                }
+            }
+
+            //req.timeout = 30000;
+            if (type === 'GET') {
+                req.send();
+            } else {
+                req.send(JSON.stringify(data));
+            }
+
+            // return the object
+            return req;
+        };
+
+        /*
+        + OWF Functions
+        */
+
+        GetUserUUID = function() {
             OWF.Preferences.getUserPreference({
                 namespace: self._objects.namespace,
-                name: key,
-                onSuccess: owfdojo.hitch(self, "onGetUserConfigSuccess"),
-                onFailure: owfdojo.hitch(self, "onGetUserConfigFailure")
+                name: "uuid",
+                onSuccess: owfdojo.hitch(self, "onGetUserUUIDSuccess"),
+                onFailure: owfdojo.hitch(self, "onGetUserUUIDFailure")
             });
         };
 
-        onGetUserConfigSuccess = function (pref) {
-            self._objects.uuid = JSON.parse(pref.value);
+        onGetUserUUIDSuccess = function (pref) {
+            if (pref.value) {
+                self._objects.userProfile.uuid = JSON.parse(pref.value);
+                self.notifyDotnet("owf.user.uuid", self._objects.userProfile.uuid);
+            } else {
+                window.setTimeout(function() {
+                    self._objects.userProfile.uuid = self.guid();
+                    self.notifyDotnet("owf.user.uuid", self._objects.userProfile.uuid);
+
+                    self.SaveUserConfig("uuid", self._objects.userProfile.uuid);
+                }, 500);
+            }
         };
 
-        onGetUserConfigFailure = function (error, status) {
+        onGetUserUUIDFailure = function (error, status) {
             console.log("!ERROR! - cannot retrieve user configuration/" + status + "/" + error);
-            self._objects.uuid = "{error}";
+
+            // create uuid and store it
+            if (status !== 404) {
+                window.setTimeout(function() {
+                    self._objects.userProfile.uuid = self.guid();
+                    self.notifyDotnet("owf.user.uuid", self._objects.userProfile.uuid);
+
+                    self.SaveUserConfig("uuid", self._objects.userProfile.uuid);
+                }, 500);
+            }
         };
 
-        saveUserConfig = function (key, value) {
+        GetUser = function() {
+            Ozone.pref.PrefServer.getCurrentUser({
+                onSuccess: owfdojo.hitch(self, "onGetUserInfoSuccess"),
+                onFailure: owfdojo.hitch(self, "onGetUserInfoFailure")
+            });
+        };
+
+        onGetUserInfoSuccess = function (userInfo) {
+            console.log(userInfo);
+            self.notifyDotnet("owf.user", JSON.stringify(userInfo));
+        };
+
+        onGetUserInfoFailure = function (error, status) {
+            console.log("!ERROR! - cannot retrieve user profile info/" + status + "/" + error);
+        };
+
+        GetUserGroups = function() {
+            self.ajaxCall(self._objects.owfInstance + "owf/group?user_id=" + self._objects.userProfile.userId,
+                null,
+                owfdojo.hitch(self, "onGetGroupSuccess"),
+                null,
+                null,
+                "application/json",
+                "GROUPINFO");
+        };
+
+        onGetUserUUIDSuccess = function (data) {
+            console.log(value);
+        };
+
+        SaveUserConfig = function (key, value) {
             OWF.Preferences.setUserPreference({
                 namespace: self._objects.namespace,
                 name: key,
@@ -81,53 +232,76 @@
         };
 
         onSetUserConfigSuccess = function (key, value, returnValue, error) {
-            console.log(key, value, returnValue)
+            console.log(key, value, returnValue);
         };
 
         onSetUserConfigFailure = function (error, status) {
             console.log("!ERROR! - cannot retrieve user configuration/" + status + "/" + error);
         };
 
-        receiveMapStatusView = function (sender, message) {
-                var senderId = JSON.parse(sender);
-                if (senderId.id === OWF.getInstanceId()) {
-                    return false;
-                }
+        /*
+        + MAP Functions
+        */
 
-                // store the map zoom level
-                if (self._objects.hasOwnProperty("dotnetInstance") && self._objects.dotnetInstance &&
-                    (self._objects.channels.indexOf("map.status.view") >= 0)) {
-                    const result = self._objects.dotnetInstance.invokeMethodAsync('GetMapStatusView', message);
-                }
+        ReceiveMapStatusView = function (sender, message) {
+            let senderId = JSON.parse(sender);
+            if (senderId.id === OWF.getInstanceId()) {
+                return false;
+            }
+
+            self.notifyDotnet("map.status.view", message);
+        };
+
+        /*
+        + interop channel controller
+        */
+
+        notifyDotnet = function(channel, message) {
+            if (self._objects.hasOwnProperty("dotnetInstance") && self._objects.dotnetInstance &&
+                (self._objects.channels.hasOwnProperty(channel))) {
+                let callback = self._objects.channels[channel].callback;
+                const result = self._objects.dotnetInstance.invokeMethodAsync(callback, message);
+            }
         };
 
         window.NotificationManager = {
             register: (objRef) => {
                 self._objects.dotnetInstance = objRef;
             },
-            start: (channel) => {
-                let index = self._objects.channels.indexOf(channel);
-                if (index < 0) {
-                    self._objects.channels.push(channel);
+            start: (channel, callback, execute) => {
+                console.log(".. NotificationManager");
+                let valid = self._objects.channels.hasOwnProperty(channel);
+                if (!valid) {
+                    self._objects.channels[channel] = {
+                        "callback": callback
+                    }
+
+                    if (execute) {
+                        self.executeFunctionByName(callback, self);
+                    }
                 }
             },
             stop: (channel) => {
-                let index = self._objects.channels.indexOf(channel);
-                if (index >= 0) {
-                    self._objects.channels.splice(index);
+                let valid = self._objects.channels.hasOwnProperty(channel);
+                if (valid) {
+                    delete self._objects.channels[channel];
                 }
             },
             deregister: () => {
-                self._objects.channels = [];
+                self._objects.channels = {};
                 self._objects.dotnetInstance = null;
             }
         };
 
-        window.attachHandlers = () => {
+        /*
+        + initial OWF setup and default channel activation (called from index.razor)
+        */
+
+        window.AttachHandlers = () => {
             OWF.relayFile = "js/eventing/rpc_relay.uncompressed.html?deployVer=1.2.0";
             owfdojo.config.dojoBlankHtmlUrl = "js/dojo-1.5.0-windowname-only/dojo/resources/blank.html?deployVer=1.2.0";
 
-            OWF.Eventing.subscribe("map.status.view", owfdojo.hitch(self, "receiveMapStatusView"));
+            OWF.Eventing.subscribe("map.status.view", owfdojo.hitch(self, "ReceiveMapStatusView"));
         };
 
         Blazor.start();

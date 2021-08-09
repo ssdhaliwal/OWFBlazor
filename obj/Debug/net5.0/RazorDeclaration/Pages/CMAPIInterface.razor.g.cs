@@ -93,6 +93,7 @@ using OWFBlazorDemo.Shared;
 #nullable restore
 #line 16 "E:\home\development\blazer\OWFBlazorDemo\Pages\CMAPIInterface.razor"
        
+    private readonly DotNetObjectReference<CMAPIInterface> _objeRef;
     private string text = "";
 
     protected override async Task OnInitializedAsync()
@@ -102,25 +103,25 @@ using OWFBlazorDemo.Shared;
         }
     }
 
-    public CMAPIInterface()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        if (firstRender)
+        {
+            await JS.InvokeVoidAsync("NotificationManager.register", _objeRef);
+        }
     }
 
-    // plot marker on map
-    // plot line on map
-    // plot polygon on map
-    // plot complex kml on map
-    // plot line with starting position, bearing/heading, distance
-    // plot buffer on map
-    // listen to map click (location capture)
-
-    private async Task MAPStatus()
+    public CMAPIInterface()
     {
+        _objeRef = DotNetObjectReference.Create(this);
     }
 
     async void IDisposable.Dispose()
     {
+        JS.InvokeVoidAsync("NotificationManager.deregister");    
+        _objeRef.Dispose();
     }
+
 
 #line default
 #line hidden

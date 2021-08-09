@@ -6,7 +6,7 @@
 <h1>Call CMAPI <code>CMAPIInterface</code> Function</h1>
 
 <p>
-    <button @onclick="MAPStatus">Show Map Status (View)</button>
+    
 </p>
 
 <p>
@@ -14,6 +14,7 @@
 </p>
 
 @code {
+    private readonly DotNetObjectReference<CMAPIInterface> _objeRef;
     private string text = "";
 
     protected override async Task OnInitializedAsync()
@@ -23,23 +24,23 @@
         }
     }
 
-    public CMAPIInterface()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        if (firstRender)
+        {
+            await JS.InvokeVoidAsync("NotificationManager.register", _objeRef);
+        }
     }
 
-    // plot marker on map
-    // plot line on map
-    // plot polygon on map
-    // plot complex kml on map
-    // plot line with starting position, bearing/heading, distance
-    // plot buffer on map
-    // listen to map click (location capture)
-
-    private async Task MAPStatus()
+    public CMAPIInterface()
     {
+        _objeRef = DotNetObjectReference.Create(this);
     }
 
     async void IDisposable.Dispose()
     {
+        JS.InvokeVoidAsync("NotificationManager.deregister");    
+        _objeRef.Dispose();
     }
+
 }

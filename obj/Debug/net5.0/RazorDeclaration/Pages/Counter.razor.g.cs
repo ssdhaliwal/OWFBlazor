@@ -82,13 +82,6 @@ using OWFBlazorDemo.Shared;
 #line default
 #line hidden
 #nullable disable
-#nullable restore
-#line 2 "E:\home\development\blazer\OWFBlazorDemo\Pages\Counter.razor"
-using System.Diagnostics;
-
-#line default
-#line hidden
-#nullable disable
     [Microsoft.AspNetCore.Components.RouteAttribute("/counter")]
     public partial class Counter : Microsoft.AspNetCore.Components.ComponentBase, IDisposable
     {
@@ -98,7 +91,7 @@ using System.Diagnostics;
         }
         #pragma warning restore 1998
 #nullable restore
-#line 27 "E:\home\development\blazer\OWFBlazorDemo\Pages\Counter.razor"
+#line 26 "E:\home\development\blazer\OWFBlazorDemo\Pages\Counter.razor"
        
     private readonly DotNetObjectReference<Counter> _objeRef;
     private int currentCount = 0;
@@ -134,7 +127,7 @@ using System.Diagnostics;
         currentCount += IncrementAmount;
         AppState.set("counter", currentCount);
 
-        await JS.InvokeVoidAsync("OWF.Eventing.publish", "counter.push", "{'counter': " + currentCount + ",'status': 'increment'}");
+        await JS.InvokeVoidAsync("OWF.Eventing.publish", "blazor.counter", "{'counter': " + currentCount + ",'status': 'increment'}");
     }
 
     private async Task DecrementCount()
@@ -142,7 +135,7 @@ using System.Diagnostics;
         currentCount -= IncrementAmount;
         AppState.set("counter", currentCount);
 
-        await JS.InvokeVoidAsync("OWF.Eventing.publish", "counter.push", "{'counter': " + currentCount + ",'status': 'decrement'}");
+        await JS.InvokeVoidAsync("OWF.Eventing.publish", "blazor.counter", "{'counter': " + currentCount + ",'status': 'decrement'}");
     }
 
     private async Task ResetCount()
@@ -150,32 +143,31 @@ using System.Diagnostics;
         currentCount = 0;
         AppState.set("counter", currentCount);
 
-        await JS.InvokeVoidAsync("OWF.Eventing.publish", "counter.push", "{'counter': " + currentCount + ",'status': 'reset'}");
+        await JS.InvokeVoidAsync("OWF.Eventing.publish", "blazor.counter", "{'counter': " + currentCount + ",'status': 'reset'}");
     }
 
     private async Task StartMapStatus()
     {
-        await JS.InvokeVoidAsync("NotificationManager.start", "map.status.view");
+        await JS.InvokeVoidAsync("NotificationManager.start", "map.status.view", "GetMapStatusView");
     }
 
     private async Task StopMapStatus()
     {
+        text = "{cleared}";
         await JS.InvokeVoidAsync("NotificationManager.stop", "map.status.view");
     }
 
     [JSInvokable]
-    public Task<string> GetMapStatusView(string mapView)
+    public async Task GetMapStatusView(string mapView)
     {
         text = mapView;
         base.StateHasChanged();
-        
-        return Task.FromResult("Done");
     }
 
     async void IDisposable.Dispose()
     {
-        await JS.InvokeVoidAsync("NotificationManager.stop", "map.status.view");
-        await JS.InvokeVoidAsync("NotificationManager.deregister");    
+        JS.InvokeVoidAsync("NotificationManager.stop", "map.status.view");
+        JS.InvokeVoidAsync("NotificationManager.deregister");    
         _objeRef.Dispose();
     }
 
