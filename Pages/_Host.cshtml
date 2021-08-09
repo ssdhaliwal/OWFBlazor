@@ -164,6 +164,7 @@
         };
 
         onGetUserUUIDSuccess = function (pref) {
+            console.log(pref);
             if (pref.value) {
                 self._objects.userProfile.uuid = JSON.parse(pref.value);
                 self.notifyDotnet("owf.user.uuid", self._objects.userProfile.uuid);
@@ -217,7 +218,7 @@
                 "GROUPINFO");
         };
 
-        onGetUserUUIDSuccess = function (data) {
+        onGetGroupSuccess = function (data) {
             console.log(value);
         };
 

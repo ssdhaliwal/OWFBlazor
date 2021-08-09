@@ -114,6 +114,8 @@ using OWFBlazorDemo.Shared;
         if (firstRender)
         {
             await JS.InvokeVoidAsync("NotificationManager.register", _objeRef);
+            AppState.set("uuid", "");
+            AppState.set("user", "");
 
             if (uuid == "")
             {

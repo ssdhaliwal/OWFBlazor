@@ -114,6 +114,7 @@ using OWFBlazorDemo.Shared;
         if (firstRender)
         {
             await JS.InvokeVoidAsync("NotificationManager.register", _objeRef);
+            AppState.set("counter", 0);
         }
     }
 
