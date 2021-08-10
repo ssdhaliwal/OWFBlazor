@@ -58,3 +58,4 @@ E:\home\development\blazer\OWFBlazorDemo\obj\Debug\net5.0\OWFBlazorDemo.genrunti
 E:\home\development\blazer\OWFBlazorDemo\obj\Debug\net5.0\OWFBlazorDemo.csproj.CopyComplete
 E:\home\development\blazer\OWFBlazorDemo\obj\Debug\net5.0\RazorDeclaration\Pages\CMAPIInterface.razor.g.cs
 E:\home\development\blazer\OWFBlazorDemo\obj\Debug\net5.0\Razor\Pages\CMAPIInterface.razor.g.cs
+E:\home\development\blazer\OWFBlazorDemo\bin\Debug\net5.0\Newtonsoft.Json.dll

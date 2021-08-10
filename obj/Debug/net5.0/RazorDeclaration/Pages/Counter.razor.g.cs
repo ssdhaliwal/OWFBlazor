@@ -82,6 +82,27 @@ using OWFBlazorDemo.Shared;
 #line default
 #line hidden
 #nullable disable
+#nullable restore
+#line 2 "E:\home\development\blazer\OWFBlazorDemo\Pages\Counter.razor"
+using Newtonsoft.Json;
+
+#line default
+#line hidden
+#nullable disable
+#nullable restore
+#line 3 "E:\home\development\blazer\OWFBlazorDemo\Pages\Counter.razor"
+using Newtonsoft.Json.Converters;
+
+#line default
+#line hidden
+#nullable disable
+#nullable restore
+#line 4 "E:\home\development\blazer\OWFBlazorDemo\Pages\Counter.razor"
+using OWFBlazorDemo.Services;
+
+#line default
+#line hidden
+#nullable disable
     [Microsoft.AspNetCore.Components.RouteAttribute("/counter")]
     public partial class Counter : Microsoft.AspNetCore.Components.ComponentBase, IDisposable
     {
@@ -91,7 +112,7 @@ using OWFBlazorDemo.Shared;
         }
         #pragma warning restore 1998
 #nullable restore
-#line 27 "E:\home\development\blazer\OWFBlazorDemo\Pages\Counter.razor"
+#line 30 "E:\home\development\blazer\OWFBlazorDemo\Pages\Counter.razor"
        
     private readonly DotNetObjectReference<Counter> _objeRef;
     private int currentCount = 0;
@@ -163,6 +184,10 @@ using OWFBlazorDemo.Shared;
     {
         text = mapView;
         base.StateHasChanged();
+
+        var obj = JsonConvert.DeserializeObject<IDictionary<string, object>>(
+            mapView, new JsonConverter[] {new JSONDictionaryConverter()});
+        JSONServices.DisplayObject(obj);
     }
 
     async void IDisposable.Dispose()

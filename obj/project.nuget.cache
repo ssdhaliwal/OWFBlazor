@@ -1,8 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "qBJWupueiVq8X0r0XaiLP+SsGxTwc3Wafgqgd6rCM3MyKIRM6zrypWldKVHzIQcQbS803YqIRwb1IcpWdLH1SQ==",
+  "dgSpecHash": "Dht33mKITEmxt4lEg7OK/TGrm0SDodqGq70TZEHL/n6yy4hdB/LD6vrBWSPIhzNP6zW8Baffryqe6jx4L/Ba/Q==",
   "success": true,
   "projectFilePath": "E:\\home\\development\\blazer\\OWFBlazorDemo\\OWFBlazorDemo.csproj",
-  "expectedPackageFiles": [],
+  "expectedPackageFiles": [
+    "C:\\Users\\ss.dhaliwal\\.nuget\\packages\\newtonsoft.json\\13.0.1\\newtonsoft.json.13.0.1.nupkg.sha512"
+  ],
   "logs": []
 }

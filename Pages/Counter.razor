@@ -1,4 +1,7 @@
 @page "/counter"
+@using Newtonsoft.Json
+@using Newtonsoft.Json.Converters
+@using OWFBlazorDemo.Services
 @implements IDisposable
 @inject IJSRuntime JS
 @inject OWFBlazorDemo.Services.AppState AppState
@@ -95,6 +98,10 @@
     {
         text = mapView;
         base.StateHasChanged();
+
+        var obj = JsonConvert.DeserializeObject<IDictionary<string, object>>(
+            mapView, new JsonConverter[] {new JSONDictionaryConverter()});
+        JSONServices.DisplayObject(obj);
     }
 
     async void IDisposable.Dispose()
