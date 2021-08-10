@@ -91,7 +91,7 @@ using OWFBlazorDemo.Shared;
         }
         #pragma warning restore 1998
 #nullable restore
-#line 26 "E:\home\development\blazer\OWFBlazorDemo\Pages\Counter.razor"
+#line 27 "E:\home\development\blazer\OWFBlazorDemo\Pages\Counter.razor"
        
     private readonly DotNetObjectReference<Counter> _objeRef;
     private int currentCount = 0;
@@ -149,7 +149,7 @@ using OWFBlazorDemo.Shared;
 
     private async Task StartMapStatus()
     {
-        await JS.InvokeVoidAsync("NotificationManager.start", "map.status.view", "GetMapStatusView");
+        await JS.InvokeVoidAsync("NotificationManager.start", "map.status.view", "ReceiveMapStatusView");
     }
 
     private async Task StopMapStatus()
@@ -159,7 +159,7 @@ using OWFBlazorDemo.Shared;
     }
 
     [JSInvokable]
-    public async Task GetMapStatusView(string mapView)
+    public async Task ReceiveMapStatusView(string mapView)
     {
         text = mapView;
         base.StateHasChanged();

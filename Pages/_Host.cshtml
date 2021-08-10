@@ -334,7 +334,6 @@
                 self._objects.dotnetInstance = objRef;
             },
             start: (channel, callback, execute, key, value) => {
-                console.log(".. NotificationManager");
                 let valid = self._objects.channels.hasOwnProperty(channel);
                 if (!valid) {
                     self._objects.channels[channel] = {
@@ -362,11 +361,49 @@
         + initial OWF setup and default channel activation (called from index.razor)
         */
 
+        shutdownWidget = function() {
+            // remove listener override to prevent looping
+            self._WidgetStateController.removeStateEventOverrides({
+                events: ['beforeclose'],
+                callback: function () {
+                    // unsubcribe the events
+                    OWF.Eventing.unsubscribe("map.status.view");
+
+                    self._WidgetStateController.closeWidget();
+                }
+            });
+        };
+
+        EventSubscriptions = function() {
+            OWF.Eventing.subscribe("map.status.view", owfdojo.hitch(self, "ReceiveMapStatusView"));
+        };
+
+        UnregisterEvents = function() {
+            OWF.Eventing.unsubscribe("map.status.view");
+        };
+
         window.AttachHandlers = () => {
+            console.log(".. attaching handlers!");
             OWF.relayFile = "js/eventing/rpc_relay.uncompressed.html?deployVer=1.2.0";
             owfdojo.config.dojoBlankHtmlUrl = "js/dojo-1.5.0-windowname-only/dojo/resources/blank.html?deployVer=1.2.0";
 
-            OWF.Eventing.subscribe("map.status.view", owfdojo.hitch(self, "ReceiveMapStatusView"));
+            self._WidgetStateController = Ozone.state.WidgetState.getInstance({
+                widgetEventingController: Ozone.eventing.Widget.getInstance(),
+                autoInit: true,
+
+                // this is fired on any event that you are registered for.
+                // the msg object tells us what event it was
+                onStateEventReceived: function (sender, msg) {
+                    if (msg.eventName === "beforeclose") {
+                        self.shutdownWidget(null, null);
+                    }
+                }
+            });
+            self._WidgetStateController.addStateEventOverrides({
+                events: ["beforeclose"]
+            });
+
+            self.EventSubscriptions();
         };
 
         Blazor.start();

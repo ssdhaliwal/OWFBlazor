@@ -26,8 +26,16 @@ namespace OWFBlazorDemo
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddSignalR(hubOptions =>
+            {
+                hubOptions.MaximumReceiveMessageSize = 50 * 1024 * 1024; // 10MB
+                hubOptions.EnableDetailedErrors = true;
+                hubOptions.KeepAliveInterval = TimeSpan.FromMinutes(1);
+            });
+            
             services.AddRazorPages();
             services.AddServerSideBlazor();
+
             services.AddSingleton<AppState>();
         }
 

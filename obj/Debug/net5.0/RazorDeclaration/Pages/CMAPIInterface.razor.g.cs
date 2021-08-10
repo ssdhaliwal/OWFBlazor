@@ -91,7 +91,7 @@ using OWFBlazorDemo.Shared;
         }
         #pragma warning restore 1998
 #nullable restore
-#line 16 "E:\home\development\blazer\OWFBlazorDemo\Pages\CMAPIInterface.razor"
+#line 32 "E:\home\development\blazer\OWFBlazorDemo\Pages\CMAPIInterface.razor"
        
     private readonly DotNetObjectReference<CMAPIInterface> _objeRef;
     private string text = "";

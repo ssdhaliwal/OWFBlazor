@@ -14,8 +14,9 @@
 <br/>
 <br/>
 
-<button class="btn btn-primary" @onclick="StartMapStatus">Start Map Status</button>&nbsp;
-<button class="btn btn-primary" @onclick="StopMapStatus">Stop Map Status</button>&nbsp;
+<code>Map Status View</code>
+<button class="btn btn-primary" @onclick="StartMapStatus">Start Listening</button>&nbsp;
+<button class="btn btn-primary" @onclick="StopMapStatus">Stop Listening</button>&nbsp;
 <br/>
 <br/>
 
@@ -80,7 +81,7 @@
 
     private async Task StartMapStatus()
     {
-        await JS.InvokeVoidAsync("NotificationManager.start", "map.status.view", "GetMapStatusView");
+        await JS.InvokeVoidAsync("NotificationManager.start", "map.status.view", "ReceiveMapStatusView");
     }
 
     private async Task StopMapStatus()
@@ -90,7 +91,7 @@
     }
 
     [JSInvokable]
-    public async Task GetMapStatusView(string mapView)
+    public async Task ReceiveMapStatusView(string mapView)
     {
         text = mapView;
         base.StateHasChanged();
