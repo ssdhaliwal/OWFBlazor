@@ -6,13 +6,27 @@
 <h1>Call OWF <code>OWFInterface</code> Function</h1>
 
 <p>
-
-</p>
-
-<p>
     <code>UUID</code>: @uuid
     <br />
     <code>User</code>: @user
+    <br />
+    <code>Groups</code>: @groups
+    <br />
+    <br />
+
+    <EditForm Model="Preference" id="savePreference">
+        <label for="savePreferenceKey">Key</label>
+        <InputText id="savePreferenceKey" @bind-Value="Preference.Key" class="form-control" />
+        <br />
+        <label for="savePreferenceValue">Value</label>
+        <InputTextArea id="savePreferenceValue" @bind-Value="Preference.Value" class="form-control" rows="5" />
+
+        <button class="btn btn-primary" @onclick="onGetPreference">Get</button>&nbsp;
+        <button class="btn btn-primary" @onclick="onSetPreference">Set</button>&nbsp;
+        <button class="btn btn-primary" @onclick="onDeletePreference">Delete</button>
+    </EditForm>
+    <br />
+    <br />
     @text
 </p>
 
@@ -20,6 +34,7 @@
     private readonly DotNetObjectReference<OWFInterface> _objeRef;
     private string uuid = "";
     private string user = "";
+    private string groups = "";
     private string text = "";
 
     protected override async Task OnInitializedAsync()
@@ -31,6 +46,7 @@
 
         uuid = (string)AppState.get("uuid", "");
         user = (string)AppState.get("user", "");
+        groups = (string)AppState.get("groups", "");
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -38,8 +54,6 @@
         if (firstRender)
         {
             await JS.InvokeVoidAsync("NotificationManager.register", _objeRef);
-            AppState.set("uuid", "");
-            AppState.set("user", "");
 
             if (uuid == "")
             {
@@ -66,7 +80,7 @@
     }
 
     [JSInvokable]
-    public Task<string> GetUser(string message)
+    public async Task GetUser(string message)
     {
         user = message;
         base.StateHasChanged();
@@ -74,13 +88,77 @@
         AppState.set("user", user);
         JS.InvokeVoidAsync("NotificationManager.stop", "owf.user");
 
-        return Task.FromResult("Done");
+        await JS.InvokeVoidAsync("NotificationManager.start", "owf.user.groups", "GetUserGroups", true);
+    }
+
+    [JSInvokable]
+    public async Task GetUserGroups(string message)
+    {
+        groups = message;
+        base.StateHasChanged();
+
+        AppState.set("groups", groups);
+        JS.InvokeVoidAsync("NotificationManager.stop", "owf.user.groups");
     }
 
     async void IDisposable.Dispose()
     {
         JS.InvokeVoidAsync("NotificationManager.deregister");
         _objeRef.Dispose();
+    }
+
+    public class PreferenceObject
+    {
+
+        public string Key { get; set; }
+
+        public string Value { get; set; }
+    }
+    public PreferenceObject Preference = new PreferenceObject();
+
+    private async Task onGetPreference()
+    {
+        await JS.InvokeVoidAsync("NotificationManager.start", "owf.preference.get", "GetUserPreference", true,
+        Preference.Key);
+    }
+
+    [JSInvokable]
+    public async Task GetUserPreference(string message)
+    {
+        text = "GetUserPreference -> " + message;
+        base.StateHasChanged();
+
+        //JS.InvokeVoidAsync("NotificationManager.stop", "owf.preference.set");
+    }
+
+    private async Task onSetPreference()
+    {
+        await JS.InvokeVoidAsync("NotificationManager.start", "owf.preference.set", "SetUserPreference", true,
+        Preference.Key, Preference.Value);
+    }
+
+    [JSInvokable]
+    public async Task SetUserPreference(string message)
+    {
+        text = "SetUserPreference -> " + message;
+        base.StateHasChanged();
+
+        //JS.InvokeVoidAsync("NotificationManager.stop", "owf.preference.set");
+    }
+
+    private async Task onDeletePreference()
+    {
+        await JS.InvokeVoidAsync("NotificationManager.start", "owf.preference.delete", "DeleteUserPreference", true,
+        Preference.Key);
+    }
+
+    [JSInvokable]
+    public async Task DeleteUserPreference(string message)
+    {
+        text = "DeleteUserPreference -> " + message;
+        base.StateHasChanged();
+
+        //JS.InvokeVoidAsync("NotificationManager.stop", "owf.preference.set");
     }
 
 }

@@ -51,7 +51,13 @@
             dotnetInstance: null,
             channels: {},
             userProfile: {
-                uuid: ""
+                uuid: "",
+                currentUserName: "",
+                currentUser: "",
+                currentUserPrevLogin: "",
+                currentId: 0,
+                email: "",
+                groups: []
             }
         };
 
@@ -164,7 +170,6 @@
         };
 
         onGetUserUUIDSuccess = function (pref) {
-            console.log(pref);
             if (pref.value) {
                 self._objects.userProfile.uuid = JSON.parse(pref.value);
                 self.notifyDotnet("owf.user.uuid", self._objects.userProfile.uuid);
@@ -173,7 +178,7 @@
                     self._objects.userProfile.uuid = self.guid();
                     self.notifyDotnet("owf.user.uuid", self._objects.userProfile.uuid);
 
-                    self.SaveUserConfig("uuid", self._objects.userProfile.uuid);
+                    self.SetUserPreference("uuid", self._objects.userProfile.uuid);
                 }, 500);
             }
         };
@@ -187,8 +192,10 @@
                     self._objects.userProfile.uuid = self.guid();
                     self.notifyDotnet("owf.user.uuid", self._objects.userProfile.uuid);
 
-                    self.SaveUserConfig("uuid", self._objects.userProfile.uuid);
+                    self.SetUserPreference("uuid", self._objects.userProfile.uuid);
                 }, 500);
+            } else {
+                self.notifyDotnet("owf.user.uuid", "!ERROR! - cannot retrieve user profile info/" + status + "/" + error);
             }
         };
 
@@ -200,16 +207,28 @@
         };
 
         onGetUserInfoSuccess = function (userInfo) {
-            console.log(userInfo);
+            self._objects.userProfile.currentUserName = userInfo.currentUserName;
+            self._objects.userProfile.currentUser = userInfo.currentUser;
+            self._objects.userProfile.currentUserPrevLogin = userInfo.currentUserPrevLogin;
+            self._objects.userProfile.currentId = userInfo.currentId;
+            self._objects.userProfile.email = userInfo.email;
+
             self.notifyDotnet("owf.user", JSON.stringify(userInfo));
         };
 
         onGetUserInfoFailure = function (error, status) {
+            self._objects.userProfile.currentUserName = "";
+            self._objects.userProfile.currentUser = "";
+            self._objects.userProfile.currentUserPrevLogin = "";
+            self._objects.userProfile.currentId = 0;
+            self._objects.userProfile.email = "";
+
             console.log("!ERROR! - cannot retrieve user profile info/" + status + "/" + error);
+            self.notifyDotnet("owf.user", "!ERROR! - cannot retrieve user profile info/" + status + "/" + error);
         };
 
         GetUserGroups = function() {
-            self.ajaxCall(self._objects.owfInstance + "owf/group?user_id=" + self._objects.userProfile.userId,
+            self.ajaxCall(self._objects.owfInstance + "owf/group?user_id=" + self._objects.userProfile.currentId,
                 null,
                 owfdojo.hitch(self, "onGetGroupSuccess"),
                 null,
@@ -218,26 +237,71 @@
                 "GROUPINFO");
         };
 
-        onGetGroupSuccess = function (data) {
-            console.log(value);
+        onGetGroupSuccess = function (groups) {
+            let payload = JSON.parse(groups.payload);
+            payload.data.forEach((group) => {
+                if (group.status === "active") {
+                    self._objects.userProfile.groups.push({
+                        displayName: group.displayName,
+                        id: group.id,
+                        name: group.name
+                    });
+                }
+            });
+
+            self.notifyDotnet("owf.user.groups", JSON.stringify(self._objects.userProfile.groups));
         };
 
-        SaveUserConfig = function (key, value) {
-            OWF.Preferences.setUserPreference({
+        GetUserPreference = function (key) {
+            OWF.Preferences.getUserPreference({
                 namespace: self._objects.namespace,
                 name: key,
-                value: JSON.stringify(value),
-                onSuccess: owfdojo.hitch(self, "onSetUserConfigSuccess", key, value),
-                onFailure: owfdojo.hitch(self, "onSetUserConfigFailure")
+                onSuccess: owfdojo.hitch(self, "onGetUserPreferenceSuccess", key),
+                onFailure: owfdojo.hitch(self, "onGetUserPreferenceFailure", key)
             });
         };
 
-        onSetUserConfigSuccess = function (key, value, returnValue, error) {
-            console.log(key, value, returnValue);
+        onGetUserPreferenceSuccess = function (key, pref) {
+            self.notifyDotnet("owf.preference.get", JSON.stringify(pref));
         };
 
-        onSetUserConfigFailure = function (error, status) {
-            console.log("!ERROR! - cannot retrieve user configuration/" + status + "/" + error);
+        onGetUserPreferenceFailure = function (key, error, status) {
+            self.notifyDotnet("owf.preference.get", "!ERROR! - cannot get preference (" + key + ")/" + status + "/" + error);
+        };
+
+        SetUserPreference = function (key, value) {
+            OWF.Preferences.setUserPreference({
+                namespace: self._objects.namespace,
+                name: key,
+                value: value,
+                onSuccess: owfdojo.hitch(self, "onSetUserPreferenceSuccess", key, value),
+                onFailure: owfdojo.hitch(self, "onSetUserPreferenceFailure", key, value)
+            });
+        };
+
+        onSetUserPreferenceSuccess = function (key, value, payload) {
+            self.notifyDotnet("owf.preference.set", JSON.stringify(payload));
+        };
+
+        onSetUserPreferenceFailure = function (key, value, error, status) {
+            self.notifyDotnet("owf.preference.set", "!ERROR! - cannot set preference (" + key + ":" + value + ")/" + status + "/" + error);
+        };
+
+        DeleteUserPreference = function (key) {
+            OWF.Preferences.deleteUserPreference({
+                namespace: self._objects.namespace,
+                name: key,
+                onSuccess: owfdojo.hitch(self, "onDeleteUserPreferenceSuccess", key),
+                onFailure: owfdojo.hitch(self, "onDeleteUserPreferenceFailure", key)
+            });
+        };
+
+        onDeleteUserPreferenceSuccess = function (key, payload) {
+            self.notifyDotnet("owf.preference.delete", JSON.stringify(payload));
+        };
+
+        onDeleteUserPreferenceFailure = function (key, error, status) {
+            self.notifyDotnet("owf.preference.delete", "!ERROR! - cannot get preference (" + key + ")/" + status + "/" + error);
         };
 
         /*
@@ -269,17 +333,17 @@
             register: (objRef) => {
                 self._objects.dotnetInstance = objRef;
             },
-            start: (channel, callback, execute) => {
+            start: (channel, callback, execute, key, value) => {
                 console.log(".. NotificationManager");
                 let valid = self._objects.channels.hasOwnProperty(channel);
                 if (!valid) {
                     self._objects.channels[channel] = {
                         "callback": callback
                     }
+                }
 
-                    if (execute) {
-                        self.executeFunctionByName(callback, self);
-                    }
+                if (execute) {
+                    self.executeFunctionByName(callback, self, key, value);
                 }
             },
             stop: (channel) => {

@@ -91,11 +91,12 @@ using OWFBlazorDemo.Shared;
         }
         #pragma warning restore 1998
 #nullable restore
-#line 19 "E:\home\development\blazer\OWFBlazorDemo\Pages\OWFInterface.razor"
+#line 33 "E:\home\development\blazer\OWFBlazorDemo\Pages\OWFInterface.razor"
        
     private readonly DotNetObjectReference<OWFInterface> _objeRef;
     private string uuid = "";
     private string user = "";
+    private string groups = "";
     private string text = "";
 
     protected override async Task OnInitializedAsync()
@@ -107,6 +108,7 @@ using OWFBlazorDemo.Shared;
 
         uuid = (string)AppState.get("uuid", "");
         user = (string)AppState.get("user", "");
+        groups = (string)AppState.get("groups", "");
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -114,8 +116,6 @@ using OWFBlazorDemo.Shared;
         if (firstRender)
         {
             await JS.InvokeVoidAsync("NotificationManager.register", _objeRef);
-            AppState.set("uuid", "");
-            AppState.set("user", "");
 
             if (uuid == "")
             {
@@ -142,7 +142,7 @@ using OWFBlazorDemo.Shared;
     }
 
     [JSInvokable]
-    public Task<string> GetUser(string message)
+    public async Task GetUser(string message)
     {
         user = message;
         base.StateHasChanged();
@@ -150,13 +150,77 @@ using OWFBlazorDemo.Shared;
         AppState.set("user", user);
         JS.InvokeVoidAsync("NotificationManager.stop", "owf.user");
 
-        return Task.FromResult("Done");
+        await JS.InvokeVoidAsync("NotificationManager.start", "owf.user.groups", "GetUserGroups", true);
+    }
+
+    [JSInvokable]
+    public async Task GetUserGroups(string message)
+    {
+        groups = message;
+        base.StateHasChanged();
+
+        AppState.set("groups", groups);
+        JS.InvokeVoidAsync("NotificationManager.stop", "owf.user.groups");
     }
 
     async void IDisposable.Dispose()
     {
         JS.InvokeVoidAsync("NotificationManager.deregister");
         _objeRef.Dispose();
+    }
+
+    public class PreferenceObject
+    {
+
+        public string Key { get; set; }
+
+        public string Value { get; set; }
+    }
+    public PreferenceObject Preference = new PreferenceObject();
+
+    private async Task onGetPreference()
+    {
+        await JS.InvokeVoidAsync("NotificationManager.start", "owf.preference.get", "GetUserPreference", true,
+        Preference.Key);
+    }
+
+    [JSInvokable]
+    public async Task GetUserPreference(string message)
+    {
+        text = "GetUserPreference -> " + message;
+        base.StateHasChanged();
+
+        //JS.InvokeVoidAsync("NotificationManager.stop", "owf.preference.set");
+    }
+
+    private async Task onSetPreference()
+    {
+        await JS.InvokeVoidAsync("NotificationManager.start", "owf.preference.set", "SetUserPreference", true,
+        Preference.Key, Preference.Value);
+    }
+
+    [JSInvokable]
+    public async Task SetUserPreference(string message)
+    {
+        text = "SetUserPreference -> " + message;
+        base.StateHasChanged();
+
+        //JS.InvokeVoidAsync("NotificationManager.stop", "owf.preference.set");
+    }
+
+    private async Task onDeletePreference()
+    {
+        await JS.InvokeVoidAsync("NotificationManager.start", "owf.preference.delete", "DeleteUserPreference", true,
+        Preference.Key);
+    }
+
+    [JSInvokable]
+    public async Task DeleteUserPreference(string message)
+    {
+        text = "DeleteUserPreference -> " + message;
+        base.StateHasChanged();
+
+        //JS.InvokeVoidAsync("NotificationManager.stop", "owf.preference.set");
     }
 
 
