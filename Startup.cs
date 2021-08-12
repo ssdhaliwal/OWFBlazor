@@ -30,7 +30,7 @@ namespace OWFBlazorDemo
             {
                 hubOptions.MaximumReceiveMessageSize = 50 * 1024 * 1024; // 10MB
                 hubOptions.EnableDetailedErrors = true;
-                hubOptions.KeepAliveInterval = TimeSpan.FromMinutes(1);
+                // hubOptions.KeepAliveInterval = TimeSpan.FromMinutes(1);
             });
             
             services.AddRazorPages();

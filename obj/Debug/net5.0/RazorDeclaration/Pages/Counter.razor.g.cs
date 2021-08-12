@@ -185,9 +185,16 @@ using OWFBlazorDemo.Services;
         text = mapView;
         base.StateHasChanged();
 
+        /* example of decomposing JSON  
         var obj = JsonConvert.DeserializeObject<IDictionary<string, object>>(
             mapView, new JsonConverter[] {new JSONDictionaryConverter()});
         JSONServices.DisplayObject(obj);
+        
+        List<string> table = JSONServices.PropertiesObject(obj);
+        foreach(string str in table) {
+            System.Console.WriteLine(str);
+        }
+        */
     }
 
     async void IDisposable.Dispose()
