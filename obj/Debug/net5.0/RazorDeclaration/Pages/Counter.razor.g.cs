@@ -84,20 +84,6 @@ using OWFBlazorDemo.Shared;
 #nullable disable
 #nullable restore
 #line 2 "E:\home\development\blazer\OWFBlazorDemo\Pages\Counter.razor"
-using Newtonsoft.Json;
-
-#line default
-#line hidden
-#nullable disable
-#nullable restore
-#line 3 "E:\home\development\blazer\OWFBlazorDemo\Pages\Counter.razor"
-using Newtonsoft.Json.Converters;
-
-#line default
-#line hidden
-#nullable disable
-#nullable restore
-#line 4 "E:\home\development\blazer\OWFBlazorDemo\Pages\Counter.razor"
 using OWFBlazorDemo.Services;
 
 #line default
@@ -112,7 +98,7 @@ using OWFBlazorDemo.Services;
         }
         #pragma warning restore 1998
 #nullable restore
-#line 30 "E:\home\development\blazer\OWFBlazorDemo\Pages\Counter.razor"
+#line 28 "E:\home\development\blazer\OWFBlazorDemo\Pages\Counter.razor"
        
     private readonly DotNetObjectReference<Counter> _objeRef;
     private int currentCount = 0;
@@ -182,19 +168,8 @@ using OWFBlazorDemo.Services;
     [JSInvokable]
     public async Task ReceiveMapStatusView(string mapView)
     {
-        text = mapView;
+        text = JSONServices.JSONAsHTMLString(mapView);
         base.StateHasChanged();
-
-        /* example of decomposing JSON  
-        var obj = JsonConvert.DeserializeObject<IDictionary<string, object>>(
-            mapView, new JsonConverter[] {new JSONDictionaryConverter()});
-        JSONServices.DisplayObject(obj);
-        
-        List<string> table = JSONServices.PropertiesObject(obj);
-        foreach(string str in table) {
-            System.Console.WriteLine(str);
-        }
-        */
     }
 
     async void IDisposable.Dispose()

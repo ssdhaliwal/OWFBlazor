@@ -1,6 +1,4 @@
 @page "/counter"
-@using Newtonsoft.Json
-@using Newtonsoft.Json.Converters
 @using OWFBlazorDemo.Services
 @implements IDisposable
 @inject IJSRuntime JS
@@ -24,7 +22,7 @@
 <br/>
 
 <p>
-    <code>Map View</code>: @text
+    <code>Map View</code>: <br/>@((MarkupString)text)
 </p>
 
 @code {
@@ -96,19 +94,8 @@
     [JSInvokable]
     public async Task ReceiveMapStatusView(string mapView)
     {
-        text = mapView;
+        text = JSONServices.JSONAsHTMLString(mapView);
         base.StateHasChanged();
-
-        /* example of decomposing JSON  
-        var obj = JsonConvert.DeserializeObject<IDictionary<string, object>>(
-            mapView, new JsonConverter[] {new JSONDictionaryConverter()});
-        JSONServices.DisplayObject(obj);
-        
-        List<string> table = JSONServices.PropertiesObject(obj);
-        foreach(string str in table) {
-            System.Console.WriteLine(str);
-        }
-        */
     }
 
     async void IDisposable.Dispose()

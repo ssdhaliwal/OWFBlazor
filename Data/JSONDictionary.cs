@@ -39,79 +39,99 @@ namespace OWFBlazorDemo.Services
 
     public abstract class JSONServices
     {
-        public static void DisplayObject(IDictionary<string, object> obj, int level = 0)
+        public static IDictionary<string, object> JSONAsDictionary(string payload) {
+            IDictionary<string, object> result = JsonConvert.DeserializeObject<IDictionary<string, object>>(
+                payload, new JsonConverter[] {new JSONDictionaryConverter()});
+            
+            //System.Console.WriteLine(payload);
+            //JSONDisplay(result);
+
+            return result;
+        }
+
+        public static void JSONDisplay(IDictionary<string, object> obj, int level = 0)
         {
-            int lLevel = level * 4;
-            foreach (KeyValuePair<string, object> kvp in obj)
+            int processJArray(KeyValuePair<string, object> kvp, int level) {
+                System.Console.WriteLine("".PadLeft((level * 4), ' ') + kvp.Key);
+
+                var list = from item in (Newtonsoft.Json.Linq.JArray)kvp.Value select item;
+                int index = 0;
+                foreach (var lObj in list)
+                {
+                    if (lObj.GetType().ToString() == "Newtonsoft.Json.Linq.JValue")
+                    {
+                        System.Console.WriteLine("".PadLeft(((level + 1) * 4), ' ') + index++ + ":" + lObj.ToString());
+                    }
+                    else if (lObj.GetType().ToString() == "Newtonsoft.Json.Linq.JObject")
+                    {
+                        System.Console.WriteLine("".PadLeft(((level + 1) * 4), ' ') + index++ + ":");
+                        var lDict = JsonConvert.DeserializeObject<IDictionary<string, object>>(
+                            lObj.ToString(), new JsonConverter[] { new JSONDictionaryConverter() });
+
+                        JSONDisplay((System.Collections.Generic.IDictionary<string, object>)lDict, ++level);
+                        level--;
+                    }
+                }
+
+                return level;
+            };
+
+            foreach (KeyValuePair<string, object> kvp in (IDictionary<string, object>)obj)
             {
-                var vType = kvp.Value.GetType().ToString();
+                var vType = (kvp.Value != null) ? kvp.Value.GetType().ToString() : "null";
                 if (vType == "Newtonsoft.Json.Linq.JArray")
                 {
-                    System.Console.WriteLine("".PadLeft(lLevel, ' ') + kvp.Key);
-                    var list = from item in (Newtonsoft.Json.Linq.JArray)kvp.Value select item;
-                    int index = 0;
-                    foreach (var lObj in list)
-                    {
-                        if (lObj.GetType().ToString() == "Newtonsoft.Json.Linq.JValue")
-                        {
-                            System.Console.WriteLine("".PadLeft(((level + 1) * 4), ' ') + index++ + ":" + lObj.ToString());
-                        }
-                        else if (lObj.GetType().ToString() == "Newtonsoft.Json.Linq.JObject")
-                        {
-                            System.Console.WriteLine("".PadLeft(((level + 1) * 4), ' ') + index++ + ":");
-                            var lDict = JsonConvert.DeserializeObject<IDictionary<string, object>>(
-                                lObj.ToString(), new JsonConverter[] { new JSONDictionaryConverter() });
-
-                            DisplayObject((System.Collections.Generic.IDictionary<string, object>)lDict, ++level);
-                            level--;
-                        }
-                    }
+                    level = processJArray(kvp, level);
                 }
                 else if (vType == "System.Collections.Generic.Dictionary`2[System.String,System.Object]")
                 {
-                    System.Console.WriteLine("".PadLeft(lLevel, ' ') + kvp.Key);
-                    DisplayObject((System.Collections.Generic.IDictionary<string, object>)kvp.Value, ++level);
+                    System.Console.WriteLine("".PadLeft((level * 4), ' ') + kvp.Key);
+                    JSONDisplay((System.Collections.Generic.IDictionary<string, object>)kvp.Value, ++level);
                     level--;
                 }
                 else
                 {
-                    System.Console.WriteLine("".PadLeft(lLevel, ' ') + (kvp.Key + "=" + kvp.Value));
+                    System.Console.WriteLine("".PadLeft((level * 4), ' ') + (kvp.Key + "=" + kvp.Value));
                 }
             }
         }
-        public static List<string> PropertiesObject(IDictionary<string, object> obj, 
+        public static List<string> JSONAsList(IDictionary<string, object> obj, 
             string path = "", List<string> properties = null)
         {
             if (properties == null) {
                 properties = new List<string>();
             }
 
+            void processJArray(KeyValuePair<string, object> kvp) {
+                var list = from item in (Newtonsoft.Json.Linq.JArray)kvp.Value select item;
+                int index = 0;
+                foreach (var lObj in list)
+                {
+                    if (lObj.GetType().ToString() == "Newtonsoft.Json.Linq.JValue")
+                    {
+                        properties.Add(((path == "") ? "" : (path + ".")) + kvp.Key + "." + index++ + "." + lObj.ToString());
+                    }
+                    else if (lObj.GetType().ToString() == "Newtonsoft.Json.Linq.JObject")
+                    {
+                        var lDict = JsonConvert.DeserializeObject<IDictionary<string, object>>(
+                            lObj.ToString(), new JsonConverter[] { new JSONDictionaryConverter() });
+
+                        JSONAsList((System.Collections.Generic.IDictionary<string, object>)lDict, 
+                            ((path == "") ? "" : (path + ".")) + kvp.Key + "." + index++, properties);
+                    }
+                }
+            };
+
             foreach (KeyValuePair<string, object> kvp in obj)
             {
-                var vType = kvp.Value.GetType().ToString();
+                var vType = (kvp.Value != null) ? kvp.Value.GetType().ToString() : "null";
                 if (vType == "Newtonsoft.Json.Linq.JArray")
                 {
-                    var list = from item in (Newtonsoft.Json.Linq.JArray)kvp.Value select item;
-                    int index = 0;
-                    foreach (var lObj in list)
-                    {
-                        if (lObj.GetType().ToString() == "Newtonsoft.Json.Linq.JValue")
-                        {
-                            properties.Add(((path == "") ? "" : (path + ".")) + kvp.Key + "." + index + "." + lObj.ToString());
-                        }
-                        else if (lObj.GetType().ToString() == "Newtonsoft.Json.Linq.JObject")
-                        {
-                            var lDict = JsonConvert.DeserializeObject<IDictionary<string, object>>(
-                                lObj.ToString(), new JsonConverter[] { new JSONDictionaryConverter() });
-
-                            PropertiesObject((System.Collections.Generic.IDictionary<string, object>)lDict, 
-                                ((path == "") ? "" : (path + ".")) + kvp.Key + "." + index, properties);
-                        }
-                    }
+                    processJArray(kvp);
                 }
                 else if (vType == "System.Collections.Generic.Dictionary`2[System.String,System.Object]")
                 {
-                    PropertiesObject((System.Collections.Generic.IDictionary<string, object>)kvp.Value, 
+                    JSONAsList((System.Collections.Generic.IDictionary<string, object>)kvp.Value, 
                         ((path == "") ? "" : (path + ".")) + kvp.Key, properties);
                 }
                 else
@@ -121,6 +141,14 @@ namespace OWFBlazorDemo.Services
             }
 
             return properties;
+        }
+
+        public static string JSONAsHTMLString(string payload)
+        {
+            IDictionary<string, object> jsonObject = JSONAsDictionary(payload);
+            List<string> properties = JSONAsList(jsonObject);
+            
+            return string.Join( "<br/>", properties );
         }
     }
 }
