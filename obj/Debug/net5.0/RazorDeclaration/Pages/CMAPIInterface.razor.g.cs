@@ -82,6 +82,13 @@ using OWFBlazorDemo.Shared;
 #line default
 #line hidden
 #nullable disable
+#nullable restore
+#line 2 "E:\home\development\blazer\OWFBlazorDemo\Pages\CMAPIInterface.razor"
+using OWFBlazorDemo.Services;
+
+#line default
+#line hidden
+#nullable disable
     [Microsoft.AspNetCore.Components.RouteAttribute("/cmapiInterface")]
     public partial class CMAPIInterface : Microsoft.AspNetCore.Components.ComponentBase, IDisposable
     {
@@ -91,14 +98,15 @@ using OWFBlazorDemo.Shared;
         }
         #pragma warning restore 1998
 #nullable restore
-#line 32 "E:\home\development\blazer\OWFBlazorDemo\Pages\CMAPIInterface.razor"
+#line 36 "E:\home\development\blazer\OWFBlazorDemo\Pages\CMAPIInterface.razor"
        
     private readonly DotNetObjectReference<CMAPIInterface> _objeRef;
     private string text = "";
 
     protected override async Task OnInitializedAsync()
     {
-        if (AppState == null) {
+        if (AppState == null)
+        {
             System.Console.WriteLine("App State is NULL");
         }
     }
@@ -108,6 +116,11 @@ using OWFBlazorDemo.Shared;
         if (firstRender)
         {
             await JS.InvokeVoidAsync("dotnetInterface.NotificationManager.register", _objeRef);
+
+            // start subscriptions
+            await JS.InvokeVoidAsync("dotnetInterface.RegisterEvents");
+            await JS.InvokeVoidAsync("dotnetInterface.NotificationManager.start", "map.status.view", "ReceiveMapStatusView");
+            await JS.InvokeVoidAsync("dotnetInterface.NotificationManager.start", "map.view.clicked", "ReceiveMapViewClicked");
         }
     }
 
@@ -116,10 +129,29 @@ using OWFBlazorDemo.Shared;
         _objeRef = DotNetObjectReference.Create(this);
     }
 
+    [JSInvokable]
+    public async Task ReceiveMapStatusView(string mapView)
+    {
+        text += "(map.status.view) -> " + JSONServices.JSONAsHTMLString(mapView) + "<br/>";
+        base.StateHasChanged();
+    }
+
+    [JSInvokable]
+    public async Task ReceiveMapViewClicked(string mapView)
+    {
+        text += "(map.view.clicked) -> " + JSONServices.JSONAsHTMLString(mapView) + "<br/>";
+        base.StateHasChanged();
+    }
+
     async void IDisposable.Dispose()
     {
-        JS.InvokeVoidAsync("dotnetInterface.NotificationManager.deregister");    
+        JS.InvokeVoidAsync("dotnetInterface.NotificationManager.stop", "map.status.view");
+        JS.InvokeVoidAsync("dotnetInterface.NotificationManager.stop", "map.view.clicked");
+        JS.InvokeVoidAsync("dotnetInterface.NotificationManager.deregister");
         _objeRef.Dispose();
+
+        // start subscriptions
+        JS.InvokeVoidAsync("dotnetInterface.UnregisterEvents");
     }
 
 

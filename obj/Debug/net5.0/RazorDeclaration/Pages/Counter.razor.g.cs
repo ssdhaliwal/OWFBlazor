@@ -122,6 +122,10 @@ using OWFBlazorDemo.Services;
         {
             await JS.InvokeVoidAsync("dotnetInterface.NotificationManager.register", _objeRef);
             AppState.set("counter", 0);
+
+            // start subscriptions
+            await JS.InvokeVoidAsync("dotnetInterface.RegisterEvents");
+            await JS.InvokeVoidAsync("dotnetInterface.NotificationManager.start", "map.status.view", "ReceiveMapStatusView");
         }
     }
 
@@ -177,6 +181,9 @@ using OWFBlazorDemo.Services;
         JS.InvokeVoidAsync("dotnetInterface.NotificationManager.stop", "map.status.view");
         JS.InvokeVoidAsync("dotnetInterface.NotificationManager.deregister");    
         _objeRef.Dispose();
+
+        // start subscriptions
+        JS.InvokeVoidAsync("dotnetInterface.UnregisterEvents");
     }
 
 #line default

@@ -98,6 +98,11 @@ using OWFBlazorDemo.Shared;
         if (firstRender)
         {
             JS.InvokeVoidAsync("window.dotnetInterface.AttachHandlers");
+
+            if (AppState != null) {
+                AppState = new OWFBlazorDemo.Services.AppState();
+                System.Console.WriteLine("App State is RESET");
+            }
         }
     }
 

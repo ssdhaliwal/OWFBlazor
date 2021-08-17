@@ -339,6 +339,16 @@
 
                 self.dotnetInterface.notifyDotnet("map.status.view", message);
             };
+
+            ReceiveMapViewClicked = function (sender, message) {
+                let self = this;
+                let senderId = JSON.parse(sender);
+                if (senderId.id === OWF.getInstanceId()) {
+                    return false;
+                }
+
+                self.dotnetInterface.notifyDotnet("map.view.clicked", message);
+            };
         };
 
         /*
@@ -430,9 +440,10 @@
                 });
             };
             */
-            EventSubscriptions = function() {
+            RegisterEvents = function() {
                 let self = this;
                 OWF.Eventing.subscribe("map.status.view", owfdojo.hitch(self.shared.cmapiInterface, "ReceiveMapStatusView"));
+                OWF.Eventing.subscribe("map.view.clicked", owfdojo.hitch(self.shared.cmapiInterface, "ReceiveMapViewClicked"));
             };
 
             UnregisterEvents = function() {
@@ -462,7 +473,6 @@
                     events: ["beforeclose"]
                 });
                 */
-                self.EventSubscriptions();
             };
         };
 
