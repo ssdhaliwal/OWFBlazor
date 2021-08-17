@@ -122,11 +122,11 @@ using OWFBlazorDemo.Services;
     {
         if (firstRender)
         {
-            await JS.InvokeVoidAsync("NotificationManager.register", _objeRef);
+            await JS.InvokeVoidAsync("dotnetInterface.NotificationManager.register", _objeRef);
 
             if (uuid == "")
             {
-                await JS.InvokeVoidAsync("NotificationManager.start", "owf.user.uuid", "GetUserUUID", true);
+                await JS.InvokeVoidAsync("dotnetInterface.NotificationManager.start", "owf.user.uuid", "GetUserUUID", true, "owf");
             }
         }
     }
@@ -143,10 +143,10 @@ using OWFBlazorDemo.Services;
         base.StateHasChanged();
 
         AppState.set("uuid", uuid);
-        JS.InvokeVoidAsync("NotificationManager.stop", "owf.user.uuid");
+        JS.InvokeVoidAsync("dotnetInterface.NotificationManager.stop", "owf.user.uuid");
 
         // invoke next call to get user info
-        await JS.InvokeVoidAsync("NotificationManager.start", "owf.user", "GetUser", true);
+        await JS.InvokeVoidAsync("dotnetInterface.NotificationManager.start", "owf.user", "GetUser", true, "owf");
     }
 
     [JSInvokable]
@@ -156,10 +156,10 @@ using OWFBlazorDemo.Services;
         base.StateHasChanged();
 
         AppState.set("user", user);
-        JS.InvokeVoidAsync("NotificationManager.stop", "owf.user");
+        JS.InvokeVoidAsync("dotnetInterface.NotificationManager.stop", "owf.user");
 
         // invoke next call to get user group info
-        await JS.InvokeVoidAsync("NotificationManager.start", "owf.user.groups", "GetUserGroups", true);
+        await JS.InvokeVoidAsync("dotnetInterface.NotificationManager.start", "owf.user.groups", "GetUserGroups", true, "owf");
     }
 
     [JSInvokable]
@@ -169,12 +169,12 @@ using OWFBlazorDemo.Services;
         base.StateHasChanged();
 
         AppState.set("groups", groups);
-        JS.InvokeVoidAsync("NotificationManager.stop", "owf.user.groups");
+        JS.InvokeVoidAsync("dotnetInterface.NotificationManager.stop", "owf.user.groups");
     }
 
     async void IDisposable.Dispose()
     {
-        JS.InvokeVoidAsync("NotificationManager.deregister");
+        JS.InvokeVoidAsync("dotnetInterface.NotificationManager.deregister");
         _objeRef.Dispose();
     }
 
@@ -189,7 +189,7 @@ using OWFBlazorDemo.Services;
 
     private async Task onGetPreference()
     {
-        await JS.InvokeVoidAsync("NotificationManager.start", "owf.preference.get", "GetUserPreference", true,
+        await JS.InvokeVoidAsync("dotnetInterface.NotificationManager.start", "owf.preference.get", "GetUserPreference", true, "owf",
         Preference.Key);
     }
 
@@ -200,12 +200,12 @@ using OWFBlazorDemo.Services;
         text = "GetUserPreference -> " + JSONServices.JSONAsHTMLString(message);
         base.StateHasChanged();
 
-        //JS.InvokeVoidAsync("NotificationManager.stop", "owf.preference.get");
+        //JS.InvokeVoidAsync("dotnetInterface.NotificationManager.stop", "owf.preference.get");
     }
 
     private async Task onSetPreference()
     {
-        await JS.InvokeVoidAsync("NotificationManager.start", "owf.preference.set", "SetUserPreference", true,
+        await JS.InvokeVoidAsync("dotnetInterface.NotificationManager.start", "owf.preference.set", "SetUserPreference", true, "owf",
         Preference.Key, Preference.Value);
     }
 
@@ -215,12 +215,12 @@ using OWFBlazorDemo.Services;
         text = "SetUserPreference -> " + JSONServices.JSONAsHTMLString(message);
         base.StateHasChanged();
 
-        //JS.InvokeVoidAsync("NotificationManager.stop", "owf.preference.set");
+        //JS.InvokeVoidAsync("dotnetInterface.NotificationManager.stop", "owf.preference.set");
     }
 
     private async Task onDeletePreference()
     {
-        await JS.InvokeVoidAsync("NotificationManager.start", "owf.preference.delete", "DeleteUserPreference", true,
+        await JS.InvokeVoidAsync("dotnetInterface.NotificationManager.start", "owf.preference.delete", "DeleteUserPreference", true, "owf",
         Preference.Key);
     }
 
@@ -230,7 +230,7 @@ using OWFBlazorDemo.Services;
         text = "DeleteUserPreference -> " + JSONServices.JSONAsHTMLString(message);
         base.StateHasChanged();
 
-        //JS.InvokeVoidAsync("NotificationManager.stop", "owf.preference.delete");
+        //JS.InvokeVoidAsync("dotnetInterface.NotificationManager.stop", "owf.preference.delete");
     }
 
 

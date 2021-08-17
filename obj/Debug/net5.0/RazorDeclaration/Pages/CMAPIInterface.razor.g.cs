@@ -107,7 +107,7 @@ using OWFBlazorDemo.Shared;
     {
         if (firstRender)
         {
-            await JS.InvokeVoidAsync("NotificationManager.register", _objeRef);
+            await JS.InvokeVoidAsync("dotnetInterface.NotificationManager.register", _objeRef);
         }
     }
 
@@ -118,7 +118,7 @@ using OWFBlazorDemo.Shared;
 
     async void IDisposable.Dispose()
     {
-        JS.InvokeVoidAsync("NotificationManager.deregister");    
+        JS.InvokeVoidAsync("dotnetInterface.NotificationManager.deregister");    
         _objeRef.Dispose();
     }
 

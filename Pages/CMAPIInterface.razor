@@ -44,7 +44,7 @@
     {
         if (firstRender)
         {
-            await JS.InvokeVoidAsync("NotificationManager.register", _objeRef);
+            await JS.InvokeVoidAsync("dotnetInterface.NotificationManager.register", _objeRef);
         }
     }
 
@@ -55,7 +55,7 @@
 
     async void IDisposable.Dispose()
     {
-        JS.InvokeVoidAsync("NotificationManager.deregister");    
+        JS.InvokeVoidAsync("dotnetInterface.NotificationManager.deregister");    
         _objeRef.Dispose();
     }
 
