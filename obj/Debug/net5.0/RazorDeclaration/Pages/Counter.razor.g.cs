@@ -98,9 +98,8 @@ using OWFBlazorDemo.Services;
         }
         #pragma warning restore 1998
 #nullable restore
-#line 28 "E:\home\development\blazer\OWFBlazorDemo\Pages\Counter.razor"
+#line 45 "E:\home\development\blazer\OWFBlazorDemo\Pages\Counter.razor"
        
-    private readonly DotNetObjectReference<Counter> _objeRef;
     private int currentCount = 0;
     private string text { get; set; }
 
@@ -109,7 +108,8 @@ using OWFBlazorDemo.Services;
 
     protected override async Task OnInitializedAsync()
     {
-        if (AppState == null) {
+        if (AppState == null)
+        {
             System.Console.WriteLine("App State is NULL");
         }
 
@@ -120,18 +120,12 @@ using OWFBlazorDemo.Services;
     {
         if (firstRender)
         {
-            await JS.InvokeVoidAsync("dotnetInterface.NotificationManager.register", _objeRef);
             AppState.set("counter", 0);
-
-            // start subscriptions
-            await JS.InvokeVoidAsync("dotnetInterface.RegisterEvents");
-            await JS.InvokeVoidAsync("dotnetInterface.NotificationManager.start", "map.status.view", "ReceiveMapStatusView");
         }
     }
 
     public Counter()
     {
-        _objeRef = DotNetObjectReference.Create(this);
     }
 
     private async Task IncrementCount()
@@ -139,7 +133,8 @@ using OWFBlazorDemo.Services;
         currentCount += IncrementAmount;
         AppState.set("counter", currentCount);
 
-        await JS.InvokeVoidAsync("OWF.Eventing.publish", "blazor.counter", "{'counter': " + currentCount + ",'status': 'increment'}");
+        await JS.InvokeVoidAsync("interopInterface.INTEROPMessageHandler.broadcast", "blazor.counter", "{'counter': " +
+        currentCount + ",'status': 'increment'}");
     }
 
     private async Task DecrementCount()
@@ -147,7 +142,8 @@ using OWFBlazorDemo.Services;
         currentCount -= IncrementAmount;
         AppState.set("counter", currentCount);
 
-        await JS.InvokeVoidAsync("OWF.Eventing.publish", "blazor.counter", "{'counter': " + currentCount + ",'status': 'decrement'}");
+        await JS.InvokeVoidAsync("interopInterface.INTEROPMessageHandler.broadcast", "blazor.counter", "{'counter': " +
+        currentCount + ",'status': 'decrement'}");
     }
 
     private async Task ResetCount()
@@ -155,35 +151,61 @@ using OWFBlazorDemo.Services;
         currentCount = 0;
         AppState.set("counter", currentCount);
 
-        await JS.InvokeVoidAsync("OWF.Eventing.publish", "blazor.counter", "{'counter': " + currentCount + ",'status': 'reset'}");
+        await JS.InvokeVoidAsync("interopInterface.INTEROPMessageHandler.broadcast", "blazor.counter", "{'counter': " +
+        currentCount + ",'status': 'reset'}");
     }
 
-    private async Task StartMapStatus()
+    public class MyListObject
     {
-        await JS.InvokeVoidAsync("dotnetInterface.NotificationManager.start", "map.status.view", "ReceiveMapStatusView");
+        public string Value { get; set; }
     }
+    public MyListObject MyList = new MyListObject();
 
-    private async Task StopMapStatus()
+    private async Task onAddList()
     {
-        text = "{cleared}";
-        await JS.InvokeVoidAsync("dotnetInterface.NotificationManager.stop", "map.status.view");
-    }
-
-    [JSInvokable]
-    public async Task ReceiveMapStatusView(string mapView)
-    {
-        text = JSONServices.JSONAsHTMLString(mapView);
+        AppState.add("MyList", MyList.Value);
         base.StateHasChanged();
+    }
+
+    private async Task onAddListFromList() {
+
+    }
+    private async Task onSubtractList() {
+
+    }
+    private async Task onSubtractListPartial() {
+
+    }
+    private async Task onSubtractListFromList() {
+
+    }
+    private async Task onCheckList() {
+
+    }
+    private async Task onCheckListPartial() {
+
+    }
+    private async Task onCheckListFromListMatched() {
+
+    }
+    private async Task onCheckListFromList() {
+
+    }
+    private async Task onList() {
+
+    }
+    private async Task onListPartial() {
+
+    }
+    private async Task onListFromListMatched() {
+
+    }
+    private async Task onListFromList() {
+
     }
 
     async void IDisposable.Dispose()
     {
-        JS.InvokeVoidAsync("dotnetInterface.NotificationManager.stop", "map.status.view");
-        JS.InvokeVoidAsync("dotnetInterface.NotificationManager.deregister");    
-        _objeRef.Dispose();
-
-        // start subscriptions
-        JS.InvokeVoidAsync("dotnetInterface.UnregisterEvents");
     }
 
 #line default

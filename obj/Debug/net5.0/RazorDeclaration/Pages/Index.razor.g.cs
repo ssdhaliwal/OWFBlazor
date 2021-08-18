@@ -91,7 +91,7 @@ using OWFBlazorDemo.Shared;
         }
         #pragma warning restore 1998
 #nullable restore
-#line 10 "E:\home\development\blazer\OWFBlazorDemo\Pages\Index.razor"
+#line 12 "E:\home\development\blazer\OWFBlazorDemo\Pages\Index.razor"
  
     protected override void OnAfterRender(bool firstRender)
     {
@@ -100,8 +100,7 @@ using OWFBlazorDemo.Shared;
             JS.InvokeVoidAsync("window.dotnetInterface.AttachHandlers");
 
             if (AppState != null) {
-                AppState = new OWFBlazorDemo.Services.AppState();
-                System.Console.WriteLine("App State is RESET");
+                AppState.reset();
             }
         }
     }

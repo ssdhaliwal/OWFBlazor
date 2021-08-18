@@ -115,12 +115,12 @@ using OWFBlazorDemo.Services;
     {
         if (firstRender)
         {
-            await JS.InvokeVoidAsync("dotnetInterface.NotificationManager.register", _objeRef);
+            await JS.InvokeVoidAsync("interopInterface.INTEROPMessageHandler.register", _objeRef);
 
             // start subscriptions
-            await JS.InvokeVoidAsync("dotnetInterface.RegisterEvents");
-            await JS.InvokeVoidAsync("dotnetInterface.NotificationManager.start", "map.status.view", "ReceiveMapStatusView");
-            await JS.InvokeVoidAsync("dotnetInterface.NotificationManager.start", "map.view.clicked", "ReceiveMapViewClicked");
+            await JS.InvokeVoidAsync("interopInterface.RegisterEvents");
+            await JS.InvokeVoidAsync("interopInterface.INTEROPMessageHandler.start", "map.status.view", "ReceiveMapStatusView");
+            await JS.InvokeVoidAsync("interopInterface.INTEROPMessageHandler.start", "map.view.clicked", "ReceiveMapViewClicked");
         }
     }
 
@@ -141,17 +141,20 @@ using OWFBlazorDemo.Services;
     {
         text += "(map.view.clicked) -> " + JSONServices.JSONAsHTMLString(mapView) + "<br/>";
         base.StateHasChanged();
+
+        // store lat/lon in the list
+        // plot temp marker for the last lat/lon
     }
 
     async void IDisposable.Dispose()
     {
-        JS.InvokeVoidAsync("dotnetInterface.NotificationManager.stop", "map.status.view");
-        JS.InvokeVoidAsync("dotnetInterface.NotificationManager.stop", "map.view.clicked");
-        JS.InvokeVoidAsync("dotnetInterface.NotificationManager.deregister");
+        JS.InvokeVoidAsync("interopInterface.INTEROPMessageHandler.stop", "map.status.view");
+        JS.InvokeVoidAsync("interopInterface.INTEROPMessageHandler.stop", "map.view.clicked");
+        JS.InvokeVoidAsync("interopInterface.INTEROPMessageHandler.deregister");
         _objeRef.Dispose();
 
         // start subscriptions
-        JS.InvokeVoidAsync("dotnetInterface.UnregisterEvents");
+        JS.InvokeVoidAsync("interopInterface.UnregisterEvents");
     }
 
 

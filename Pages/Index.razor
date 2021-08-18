@@ -6,6 +6,8 @@
 
 Welcome to your new app.
 
+APPSTATE: Navigating to this page clears you APP State storage.
+
 @code
 {
     protected override void OnAfterRender(bool firstRender)
@@ -15,8 +17,7 @@ Welcome to your new app.
             JS.InvokeVoidAsync("window.dotnetInterface.AttachHandlers");
 
             if (AppState != null) {
-                AppState = new OWFBlazorDemo.Services.AppState();
-                System.Console.WriteLine("App State is RESET");
+                AppState.reset();
             }
         }
     }

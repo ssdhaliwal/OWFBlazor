@@ -148,12 +148,12 @@
         + OWF Functions
         */
         class OWFInterface {
-            constructor(dotnetInterface) {
-                this.dotnetInterface = dotnetInterface;
+            constructor(interopInterface) {
+                this.interopInterface = interopInterface;
 
-                this.shared = dotnetInterface.shared;
-                this.jsUtilities = dotnetInterface.jsUtilities;
-                this.owfInterface = dotnetInterface.owfInterface;
+                this.shared = interopInterface.shared;
+                this.jsUtilities = interopInterface.jsUtilities;
+                this.owfInterface = interopInterface.owfInterface;
             };
 
             GetUserUUID = function() {
@@ -170,11 +170,11 @@
                 let self = this;
                 if (pref.value) {
                     self.shared.userProfile.uuid = JSON.parse(pref.value);
-                    self.dotnetInterface.notifyDotnet("owf.user.uuid", self.shared.userProfile.uuid);
+                    self.interopInterface.notifyDotnet("owf.user.uuid", self.shared.userProfile.uuid);
                 } else {
                     window.setTimeout(function() {
                         self.shared.userProfile.uuid = self.guid();
-                        self.dotnetInterface.notifyDotnet("owf.user.uuid", self.shared.userProfile.uuid);
+                        self.interopInterface.notifyDotnet("owf.user.uuid", self.shared.userProfile.uuid);
 
                         self.SetUserPreference("uuid", self.shared.userProfile.uuid);
                     }, 500);
@@ -189,12 +189,12 @@
                 if (status !== 404) {
                     window.setTimeout(function() {
                         self.shared.userProfile.uuid = self.guid();
-                        self.dotnetInterface.notifyDotnet("owf.user.uuid", self.shared.userProfile.uuid);
+                        self.interopInterface.notifyDotnet("owf.user.uuid", self.shared.userProfile.uuid);
 
                         self.SetUserPreference("uuid", self.shared.userProfile.uuid);
                     }, 500);
                 } else {
-                    self.dotnetInterface.notifyDotnet("owf.user.uuid", "!ERROR! - cannot retrieve user profile info/" + status + "/" + error);
+                    self.interopInterface.notifyDotnet("owf.user.uuid", "!ERROR! - cannot retrieve user profile info/" + status + "/" + error);
                 }
             };
 
@@ -214,7 +214,7 @@
                 self.shared.userProfile.currentId = userInfo.currentId;
                 self.shared.userProfile.email = userInfo.email;
 
-                self.dotnetInterface.notifyDotnet("owf.user", JSON.stringify(userInfo));
+                self.interopInterface.notifyDotnet("owf.user", JSON.stringify(userInfo));
             };
 
             onGetUserInfoFailure = function (error, status) {
@@ -226,7 +226,7 @@
                 self.shared.userProfile.email = "";
 
                 console.log("!ERROR! - cannot retrieve user profile info/" + status + "/" + error);
-                self.dotnetInterface.notifyDotnet("owf.user", "!ERROR! - cannot retrieve user profile info/" + status + "/" + error);
+                self.interopInterface.notifyDotnet("owf.user", "!ERROR! - cannot retrieve user profile info/" + status + "/" + error);
             };
 
             GetUserGroups = function() {
@@ -253,7 +253,7 @@
                     }
                 });
 
-                self.dotnetInterface.notifyDotnet("owf.user.groups", JSON.stringify(self.shared.userProfile.groups));
+                self.interopInterface.notifyDotnet("owf.user.groups", JSON.stringify(self.shared.userProfile.groups));
             };
 
             GetUserPreference = function (key) {
@@ -268,12 +268,12 @@
 
             onGetUserPreferenceSuccess = function (key, pref) {
                 let self = this;
-                self.dotnetInterface.notifyDotnet("owf.preference.get", JSON.stringify(pref));
+                self.interopInterface.notifyDotnet("owf.preference.get", JSON.stringify(pref));
             };
 
             onGetUserPreferenceFailure = function (key, error, status) {
                 let self = this;
-                self.dotnetInterface.notifyDotnet("owf.preference.get", "!ERROR! - cannot get preference (" + key + ")/" + status + "/" + error);
+                self.interopInterface.notifyDotnet("owf.preference.get", "!ERROR! - cannot get preference (" + key + ")/" + status + "/" + error);
             };
 
             SetUserPreference = function (key, value) {
@@ -289,12 +289,12 @@
 
             onSetUserPreferenceSuccess = function (key, value, payload) {
                 let self = this;
-                self.dotnetInterface.notifyDotnet("owf.preference.set", JSON.stringify(payload));
+                self.interopInterface.notifyDotnet("owf.preference.set", JSON.stringify(payload));
             };
 
             onSetUserPreferenceFailure = function (key, value, error, status) {
                 let self = this;
-                self.dotnetInterface.notifyDotnet("owf.preference.set", "!ERROR! - cannot set preference (" + key + ":" + value + ")/" + status + "/" + error);
+                self.interopInterface.notifyDotnet("owf.preference.set", "!ERROR! - cannot set preference (" + key + ":" + value + ")/" + status + "/" + error);
             };
 
             DeleteUserPreference = function (key) {
@@ -309,12 +309,12 @@
 
             onDeleteUserPreferenceSuccess = function (key, payload) {
                 let self = this;
-                self.dotnetInterface.notifyDotnet("owf.preference.delete", JSON.stringify(payload));
+                self.interopInterface.notifyDotnet("owf.preference.delete", JSON.stringify(payload));
             };
 
             onDeleteUserPreferenceFailure = function (key, error, status) {
                 let self = this;
-                self.dotnetInterface.notifyDotnet("owf.preference.delete", "!ERROR! - cannot get preference (" + key + ")/" + status + "/" + error);
+                self.interopInterface.notifyDotnet("owf.preference.delete", "!ERROR! - cannot get preference (" + key + ")/" + status + "/" + error);
             };
         };
 
@@ -322,12 +322,12 @@
         + MAP Functions
         */
         class CMAPIInterface {
-            constructor(dotnetInterface) {
-                this.dotnetInterface = dotnetInterface;
+            constructor(interopInterface) {
+                this.interopInterface = interopInterface;
 
-                this.shared = dotnetInterface.shared;
-                this.jsUtilities = dotnetInterface.jsUtilities;
-                this.owfInterface = dotnetInterface.owfInterface;
+                this.shared = interopInterface.shared;
+                this.jsUtilities = interopInterface.jsUtilities;
+                this.owfInterface = interopInterface.owfInterface;
             };
 
             ReceiveMapStatusView = function (sender, message) {
@@ -337,7 +337,7 @@
                     return false;
                 }
 
-                self.dotnetInterface.notifyDotnet("map.status.view", message);
+                self.interopInterface.notifyDotnet("map.status.view", message);
             };
 
             ReceiveMapViewClicked = function (sender, message) {
@@ -347,14 +347,14 @@
                     return false;
                 }
 
-                self.dotnetInterface.notifyDotnet("map.view.clicked", message);
+                self.interopInterface.notifyDotnet("map.view.clicked", message);
             };
         };
 
         /*
         + interop channel controller
         */
-        class DOTNETInterface {
+        class INTEROPInterface {
             shared = {
                 namespace: "rescue21.uscg.mil",
                 owfInstance: "https://localhost:8443/",
@@ -375,7 +375,7 @@
                 this.shared.jsUtilities = new JSUtilities();
                 this.shared.owfInterface = new OWFInterface(this);
                 this.shared.cmapiInterface = new CMAPIInterface(this);
-                this.shared.dotnetInterface = this;
+                this.shared.interopInterface = this;
             };
 
             notifyDotnet = function(channel, message) {
@@ -387,7 +387,7 @@
                 }
             };
 
-            NotificationManager = {
+            INTEROPMessageHandler = {
                 register: (objRef) => {
                     let self = this;
                     self.shared.dotnetInstance = objRef;
@@ -420,6 +420,15 @@
                     let self = this;
                     self.shared.channels = {};
                     self.shared.dotnetInstance = null;
+                },
+                broadcast: (channel, message, uuid) => {
+                    if (!message && !uuid) {
+                        OWF.Eventing.publish(channel, message, uuid);
+                    } else if (!uuid) {
+                        OWF.Eventing.publish(channel, message);
+                    } else {
+                        OWF.Eventing.publish(channel);
+                    }
                 }
             };
 
@@ -476,7 +485,7 @@
             };
         };
 
-        var dotnetInterface = new DOTNETInterface();
+        var interopInterface = new INTEROPInterface();
         Blazor.start();
     </script>
 </body>
