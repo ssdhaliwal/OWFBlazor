@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 
 namespace OWFBlazorDemo.Services
 {
@@ -49,7 +50,7 @@ namespace OWFBlazorDemo.Services
             if (ObjectDictionary.ContainsKey(key))
             {
                 object o = ObjectDictionary[key];
-                if (o.GetType().ToString() == "System.Collections.Generic.List<string>")
+                if (o.GetType().ToString() == "System.Collections.Generic.List`1[System.String]")
                 {
                     result = (List<string>)o;
                 }
@@ -183,6 +184,23 @@ namespace OWFBlazorDemo.Services
                         result = false;
                         break;
                     }
+                }
+            }
+
+            return result;
+        }
+
+        public List<string> list(string key)
+        {
+            List<string> result = new List<string>();
+            List<string> childList = getChildList(key);
+
+            // add the new value if it does not exists
+            if (childList != null)
+            {
+                foreach (string value in childList)
+                {
+                    result.Add(value);
                 }
             }
 

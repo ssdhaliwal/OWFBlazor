@@ -98,7 +98,7 @@ using OWFBlazorDemo.Services;
         }
         #pragma warning restore 1998
 #nullable restore
-#line 45 "E:\home\development\blazer\OWFBlazorDemo\Pages\Counter.razor"
+#line 46 "E:\home\development\blazer\OWFBlazorDemo\Pages\Counter.razor"
        
     private int currentCount = 0;
     private string text { get; set; }
@@ -163,45 +163,83 @@ using OWFBlazorDemo.Services;
 
     private async Task onAddList()
     {
+        // adding one value
         AppState.add("MyList", MyList.Value);
-        base.StateHasChanged();
+        onListAll();
     }
 
     private async Task onAddListFromList() {
-
+        // adding multiple values, comma separated
+        AppState.add("MyList", (MyList.Value).Split(",").ToList<string>());
+        onListAll();
     }
     private async Task onSubtractList() {
-
+        // subtracting one value
+        AppState.subtract("MyList", MyList.Value);
+        onListAll();
     }
     private async Task onSubtractListPartial() {
-
+        // subtracting one value
+        AppState.subtract("MyList", MyList.Value, true);
+        onListAll();
     }
     private async Task onSubtractListFromList() {
-
+        // subtracting multiple values, comma separated
+        AppState.subtract("MyList", (MyList.Value).Split(",").ToList<string>());
+        onListAll();
     }
     private async Task onCheckList() {
+        // check one value
+        onListAll();
 
+        bool checkResult = AppState.check("MyList", MyList.Value);
+        text += "<br />(check) -> " + checkResult.ToString();
+        base.StateHasChanged();
     }
     private async Task onCheckListPartial() {
-
+        // check one value (partial)
+        onListAll();
+        bool checkResult = AppState.check("MyList", MyList.Value, true);
+        text += "<br />(check) -> " + checkResult.ToString();
+        base.StateHasChanged();
     }
     private async Task onCheckListFromListMatched() {
-
+        // check multiple values, comma separated (all exist)
+        onListAll();
+        bool checkResult = AppState.check("MyList", (MyList.Value).Split(",").ToList<string>(), true);
+        text += "<br />(check) -> " + checkResult.ToString();
+        base.StateHasChanged();
     }
     private async Task onCheckListFromList() {
-
+        // check multiple values, comma separated (any exist)
+        onListAll();
+        bool checkResult = AppState.check("MyList", (MyList.Value).Split(",").ToList<string>());
+        text += "<br />(check) -> " + checkResult.ToString();
+        base.StateHasChanged();
+    }
+    private async Task onListAll() {
+        text = "(list) -> " + string.Join(",", (AppState.list("MyList")).Select(x => x.ToString()).ToArray());
+        base.StateHasChanged();
     }
     private async Task onList() {
-
+        onListAll();
+        text += "<br />(result) -> " + string.Join(",", AppState.list("MyList", MyList.Value).Select(x => x.ToString()).ToArray());
+        base.StateHasChanged();
     }
     private async Task onListPartial() {
-
+        onListAll();
+        text += "<br />(result) -> " + string.Join(",", AppState.list("MyList", MyList.Value, true).Select(x => x.ToString()).ToArray());
+        base.StateHasChanged();
     }
     private async Task onListFromListMatched() {
-
+        onListAll();
+        text += "<br />(result) -> " + string.Join(",", (AppState.list("MyList", (MyList.Value).Split(",").ToList<string>())).Select(x => x.ToString()).ToArray());
+        base.StateHasChanged();
     }
     private async Task onListFromList() {
-
+        onListAll();
+        text += "<br />(result) -> " + string.Join(",", (AppState.list("MyList", (MyList.Value).Split(",").ToList<string>(), false)).Select(x => x.ToString()).ToArray());
+        base.StateHasChanged();
     }
 
     async void IDisposable.Dispose()
