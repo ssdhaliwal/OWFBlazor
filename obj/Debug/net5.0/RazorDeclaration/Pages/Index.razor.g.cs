@@ -97,7 +97,7 @@ using OWFBlazorDemo.Shared;
     {
         if (firstRender)
         {
-            JS.InvokeVoidAsync("window.dotnetInterface.AttachHandlers");
+            JS.InvokeVoidAsync("interopInterface.AttachHandlers");
 
             if (AppState != null) {
                 AppState.reset();

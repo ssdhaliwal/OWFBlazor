@@ -14,7 +14,7 @@ APPSTATE: Navigating to this page clears you APP State storage.
     {
         if (firstRender)
         {
-            JS.InvokeVoidAsync("window.dotnetInterface.AttachHandlers");
+            JS.InvokeVoidAsync("interopInterface.AttachHandlers");
 
             if (AppState != null) {
                 AppState.reset();

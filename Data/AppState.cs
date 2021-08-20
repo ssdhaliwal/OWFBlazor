@@ -102,7 +102,7 @@ namespace OWFBlazorDemo.Services
             if (childList != null)
             {
                 var index = -1;
-                foreach (string value in childList)
+                foreach (string value in childList.ToList())
                 {
                     if (partial && (value.StartsWith(match)))
                     {

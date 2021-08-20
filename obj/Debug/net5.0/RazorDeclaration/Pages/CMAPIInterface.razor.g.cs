@@ -98,10 +98,19 @@ using OWFBlazorDemo.Services;
         }
         #pragma warning restore 1998
 #nullable restore
-#line 36 "E:\home\development\blazer\OWFBlazorDemo\Pages\CMAPIInterface.razor"
+#line 54 "E:\home\development\blazer\OWFBlazorDemo\Pages\CMAPIInterface.razor"
        
     private readonly DotNetObjectReference<CMAPIInterface> _objeRef;
+    private string uuid = "";
     private string text = "";
+
+    public class MapInfoObject
+    {
+        public string Overlay { get; set; }
+        public string Feature { get; set; }
+        public string Value { get; set; }
+    }
+    public MapInfoObject MapInfo = new MapInfoObject();
 
     protected override async Task OnInitializedAsync()
     {
@@ -109,6 +118,8 @@ using OWFBlazorDemo.Services;
         {
             System.Console.WriteLine("App State is NULL");
         }
+
+        uuid = (string)AppState.get("uuid", "");
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -132,18 +143,41 @@ using OWFBlazorDemo.Services;
     [JSInvokable]
     public async Task ReceiveMapStatusView(string mapView)
     {
-        text += "(map.status.view) -> " + JSONServices.JSONAsHTMLString(mapView) + "<br/>";
+        text = "(map.status.view) -> " + JSONServices.JSONAsHTMLString(mapView) + "<br/>";
         base.StateHasChanged();
     }
 
     [JSInvokable]
     public async Task ReceiveMapViewClicked(string mapView)
     {
-        text += "(map.view.clicked) -> " + JSONServices.JSONAsHTMLString(mapView) + "<br/>";
+        text = "(map.view.clicked) -> " + JSONServices.JSONAsHTMLString(mapView) + "<br/>";
         base.StateHasChanged();
 
         // store lat/lon in the list
         // plot temp marker for the last lat/lon
+
+    }
+
+    private async Task onPlotMarker()
+    {
+        string uuid = Guid.NewGuid().ToString();
+        await JS.InvokeVoidAsync("interopInterface.shared.cmapiInterface.PlotMarker", MapInfo.Overlay, MapInfo.Feature, uuid, MapInfo.Value);
+    }
+    private async Task onPlotLineString()
+    {
+        string uuid = Guid.NewGuid().ToString();
+        await JS.InvokeVoidAsync("interopInterface.shared.cmapiInterface.PlotLineString", MapInfo.Overlay, MapInfo.Feature, uuid, MapInfo.Value);
+    }
+    private async Task onPlotPolygon()
+    {
+        string uuid = Guid.NewGuid().ToString();
+
+        // split value to get inner boundaries if specified
+        string[] boundaries = MapInfo.Value.Split(new [] { "\r\n", "\r", "\n" }, StringSplitOptions.RemoveEmptyEntries);
+        string outerBoundary = boundaries[0];
+        string innerBoundary = "";
+
+        await JS.InvokeVoidAsync("interopInterface.shared.cmapiInterface.PlotPolygon", MapInfo.Overlay, MapInfo.Feature, uuid, outerBoundary, innerBoundary);
     }
 
     async void IDisposable.Dispose()
@@ -156,7 +190,6 @@ using OWFBlazorDemo.Services;
         // start subscriptions
         JS.InvokeVoidAsync("interopInterface.UnregisterEvents");
     }
-
 
 #line default
 #line hidden

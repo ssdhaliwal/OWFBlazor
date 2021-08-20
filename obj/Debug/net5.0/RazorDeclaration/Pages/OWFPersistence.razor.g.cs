@@ -83,14 +83,14 @@ using OWFBlazorDemo.Shared;
 #line hidden
 #nullable disable
 #nullable restore
-#line 2 "E:\home\development\blazer\OWFBlazorDemo\Pages\Counter.razor"
+#line 2 "E:\home\development\blazer\OWFBlazorDemo\Pages\OWFPersistence.razor"
 using OWFBlazorDemo.Services;
 
 #line default
 #line hidden
 #nullable disable
-    [Microsoft.AspNetCore.Components.RouteAttribute("/counter")]
-    public partial class Counter : Microsoft.AspNetCore.Components.ComponentBase, IDisposable
+    [Microsoft.AspNetCore.Components.RouteAttribute("/owfPersistence")]
+    public partial class OWFPersistence : Microsoft.AspNetCore.Components.ComponentBase, IDisposable
     {
         #pragma warning disable 1998
         protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder __builder)
@@ -98,12 +98,20 @@ using OWFBlazorDemo.Services;
         }
         #pragma warning restore 1998
 #nullable restore
-#line 18 "E:\home\development\blazer\OWFBlazorDemo\Pages\Counter.razor"
+#line 29 "E:\home\development\blazer\OWFBlazorDemo\Pages\OWFPersistence.razor"
        
-    private int currentCount = 0;
+    private readonly DotNetObjectReference<OWFPersistence> _objeRef;
+    private string uuid = "";
+    private string text = "";
 
-    [Parameter]
-    public int IncrementAmount { get; set; } = 1;
+    public class PreferenceObject
+    {
+
+        public string Key { get; set; }
+
+        public string Value { get; set; }
+    }
+    public PreferenceObject Preference = new PreferenceObject();
 
     protected override async Task OnInitializedAsync()
     {
@@ -112,50 +120,75 @@ using OWFBlazorDemo.Services;
             System.Console.WriteLine("App State is NULL");
         }
 
-        currentCount = (int)AppState.get("counter", 0);
+        uuid = (string)AppState.get("uuid", "");
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            AppState.set("counter", 0);
+            await JS.InvokeVoidAsync("interopInterface.INTEROPMessageHandler.register", _objeRef);
         }
     }
 
-    public Counter()
+    public OWFPersistence()
     {
+        _objeRef = DotNetObjectReference.Create(this);
     }
 
-    private async Task IncrementCount()
+    private async Task onGetPreference()
     {
-        currentCount += IncrementAmount;
-        AppState.set("counter", currentCount);
-
-        await JS.InvokeVoidAsync("interopInterface.INTEROPMessageHandler.broadcast", "blazor.counter", "{'counter': " +
-        currentCount + ",'status': 'increment'}");
+        await JS.InvokeVoidAsync("interopInterface.INTEROPMessageHandler.start", "owf.preference.get", "GetUserPreference",
+        true, "owf",
+        Preference.Key);
     }
 
-    private async Task DecrementCount()
+    [JSInvokable]
+    public async Task GetUserPreference(string message)
     {
-        currentCount -= IncrementAmount;
-        AppState.set("counter", currentCount);
+        System.Console.WriteLine(message);
+        text = "GetUserPreference -> " + JSONServices.JSONAsHTMLString(message);
+        base.StateHasChanged();
 
-        await JS.InvokeVoidAsync("interopInterface.INTEROPMessageHandler.broadcast", "blazor.counter", "{'counter': " +
-        currentCount + ",'status': 'decrement'}");
+        //JS.InvokeVoidAsync("interopInterface.INTEROPMessageHandler.stop", "owf.preference.get");
     }
 
-    private async Task ResetCount()
+    private async Task onSetPreference()
     {
-        currentCount = 0;
-        AppState.set("counter", currentCount);
+        await JS.InvokeVoidAsync("interopInterface.INTEROPMessageHandler.start", "owf.preference.set", "SetUserPreference",
+        true, "owf",
+        Preference.Key, Preference.Value);
+    }
 
-        await JS.InvokeVoidAsync("interopInterface.INTEROPMessageHandler.broadcast", "blazor.counter", "{'counter': " +
-        currentCount + ",'status': 'reset'}");
+    [JSInvokable]
+    public async Task SetUserPreference(string message)
+    {
+        text = "SetUserPreference -> " + JSONServices.JSONAsHTMLString(message);
+        base.StateHasChanged();
+
+        //JS.InvokeVoidAsync("interopInterface.INTEROPMessageHandler.stop", "owf.preference.set");
+    }
+
+    private async Task onDeletePreference()
+    {
+        await JS.InvokeVoidAsync("interopInterface.INTEROPMessageHandler.start", "owf.preference.delete",
+        "DeleteUserPreference", true, "owf",
+        Preference.Key);
+    }
+
+    [JSInvokable]
+    public async Task DeleteUserPreference(string message)
+    {
+        text = "DeleteUserPreference -> " + JSONServices.JSONAsHTMLString(message);
+        base.StateHasChanged();
+
+        //JS.InvokeVoidAsync("interopInterface.INTEROPMessageHandler.stop", "owf.preference.delete");
     }
 
     async void IDisposable.Dispose()
     {
+        JS.InvokeVoidAsync("interopInterface.INTEROPMessageHandler.deregister");
+        _objeRef.Dispose();
     }
 
 #line default

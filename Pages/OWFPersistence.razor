@@ -1,0 +1,120 @@
+@page "/owfPersistence"
+@using OWFBlazorDemo.Services
+@implements IDisposable
+@inject IJSRuntime JS
+@inject OWFBlazorDemo.Services.AppState AppState
+
+<h1><code>OWF</code> Persistence</h1>
+
+<p>
+    <code>UUID</code>: @uuid
+    <br />
+
+    <EditForm Model="Preference" id="savePreference">
+        <label for="savePreferenceKey">Key</label>
+        <InputText id="savePreferenceKey" @bind-Value="Preference.Key" class="form-control" />
+        <br />
+        <label for="savePreferenceValue">Value</label>
+        <InputTextArea id="savePreferenceValue" @bind-Value="Preference.Value" class="form-control" rows="5" />
+
+        <button class="btn btn-primary" @onclick="onGetPreference">Get</button>&nbsp;
+        <button class="btn btn-primary" @onclick="onSetPreference">Set</button>&nbsp;
+        <button class="btn btn-primary" @onclick="onDeletePreference">Delete</button>
+    </EditForm>
+    <br />
+    <br />
+    @((MarkupString)text)
+</p>
+
+@code {
+    private readonly DotNetObjectReference<OWFPersistence> _objeRef;
+    private string uuid = "";
+    private string text = "";
+
+    public class PreferenceObject
+    {
+
+        public string Key { get; set; }
+
+        public string Value { get; set; }
+    }
+    public PreferenceObject Preference = new PreferenceObject();
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (AppState == null)
+        {
+            System.Console.WriteLine("App State is NULL");
+        }
+
+        uuid = (string)AppState.get("uuid", "");
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JS.InvokeVoidAsync("interopInterface.INTEROPMessageHandler.register", _objeRef);
+        }
+    }
+
+    public OWFPersistence()
+    {
+        _objeRef = DotNetObjectReference.Create(this);
+    }
+
+    private async Task onGetPreference()
+    {
+        await JS.InvokeVoidAsync("interopInterface.INTEROPMessageHandler.start", "owf.preference.get", "GetUserPreference",
+        true, "owf",
+        Preference.Key);
+    }
+
+    [JSInvokable]
+    public async Task GetUserPreference(string message)
+    {
+        System.Console.WriteLine(message);
+        text = "GetUserPreference -> " + JSONServices.JSONAsHTMLString(message);
+        base.StateHasChanged();
+
+        //JS.InvokeVoidAsync("interopInterface.INTEROPMessageHandler.stop", "owf.preference.get");
+    }
+
+    private async Task onSetPreference()
+    {
+        await JS.InvokeVoidAsync("interopInterface.INTEROPMessageHandler.start", "owf.preference.set", "SetUserPreference",
+        true, "owf",
+        Preference.Key, Preference.Value);
+    }
+
+    [JSInvokable]
+    public async Task SetUserPreference(string message)
+    {
+        text = "SetUserPreference -> " + JSONServices.JSONAsHTMLString(message);
+        base.StateHasChanged();
+
+        //JS.InvokeVoidAsync("interopInterface.INTEROPMessageHandler.stop", "owf.preference.set");
+    }
+
+    private async Task onDeletePreference()
+    {
+        await JS.InvokeVoidAsync("interopInterface.INTEROPMessageHandler.start", "owf.preference.delete",
+        "DeleteUserPreference", true, "owf",
+        Preference.Key);
+    }
+
+    [JSInvokable]
+    public async Task DeleteUserPreference(string message)
+    {
+        text = "DeleteUserPreference -> " + JSONServices.JSONAsHTMLString(message);
+        base.StateHasChanged();
+
+        //JS.InvokeVoidAsync("interopInterface.INTEROPMessageHandler.stop", "owf.preference.delete");
+    }
+
+    async void IDisposable.Dispose()
+    {
+        JS.InvokeVoidAsync("interopInterface.INTEROPMessageHandler.deregister");
+        _objeRef.Dispose();
+    }
+}

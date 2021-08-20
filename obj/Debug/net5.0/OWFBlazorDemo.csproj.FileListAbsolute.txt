@@ -59,3 +59,7 @@ E:\home\development\blazer\OWFBlazorDemo\obj\Debug\net5.0\OWFBlazorDemo.csproj.C
 E:\home\development\blazer\OWFBlazorDemo\obj\Debug\net5.0\RazorDeclaration\Pages\CMAPIInterface.razor.g.cs
 E:\home\development\blazer\OWFBlazorDemo\obj\Debug\net5.0\Razor\Pages\CMAPIInterface.razor.g.cs
 E:\home\development\blazer\OWFBlazorDemo\bin\Debug\net5.0\Newtonsoft.Json.dll
+E:\home\development\blazer\OWFBlazorDemo\obj\Debug\net5.0\RazorDeclaration\Pages\APPState.razor.g.cs
+E:\home\development\blazer\OWFBlazorDemo\obj\Debug\net5.0\Razor\Pages\APPState.razor.g.cs
+E:\home\development\blazer\OWFBlazorDemo\obj\Debug\net5.0\RazorDeclaration\Pages\OWFPersistence.razor.g.cs
+E:\home\development\blazer\OWFBlazorDemo\obj\Debug\net5.0\Razor\Pages\OWFPersistence.razor.g.cs

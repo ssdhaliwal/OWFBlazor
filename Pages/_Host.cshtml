@@ -349,6 +349,68 @@
 
                 self.interopInterface.notifyDotnet("map.view.clicked", message);
             };
+
+            PlotKML = function (uuid, kml) {
+
+            };
+
+            PlotMarker = function (overlay, title, uuid, coordinates) {
+                // format kml and cmapi message for marker and publish it
+                let payload = {
+                    overlayId:overlay,
+                    featureId:title.replace(/ /g, "-"),
+                    name:title,
+                    format:"kml",
+                    params:{
+                        serviceType:"feature",
+                        format:"image/png",
+                        refreshInterval:"30",
+                        zoom:"false",
+                        showLabels:"false",
+                        opacity:0.2,
+                        transparent:"true",
+                        useProxy:"false",
+                        mode:"ondemand"
+                    },
+                    zoom:true,
+                    mapId:1,
+                    feature:"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                        "<kml xmlns=\"http://www.opengis.net/kml/2.2\" xmlns:gx=\"http://www.google.com/kml/ext/2.2\" xmlns:kml=\"http://www.opengis.net/kml/2.2\" xmlns:atom=\"http://www.w3.org/2005/Atom\">\n" +
+                        "<Document>\n" +
+                        "    <name>" + overlay.replace(/ /g, "-") + "_" + title.replace(/ /g, "-") + ".kml</name>\n\n" +
+                        "    <Placemark>\n" +
+                        "        <id>" + uuid + "</id>\n\n" +
+                        "        <name>" + title + "</name>\n\n" +
+                        "        <Point>\n" +
+                        "            <coordinates>" + coordinates + "</coordinates>\n" +
+                        "        </Point>\n\n" +
+                        "    </Placemark>\n\n" +
+                        "</Document>\n" +
+                        "</kml>"
+                }
+
+                OWF.Eventing.publish("map.feature.plot", JSON.stringify(payload));
+            };
+
+            PlotLineString = function (overlay, title, uuid, coordinates) {
+                console.log(uuid, coordinates);
+            };
+
+            PlotPolygon = function (overlay, title, uuid, outerBoundary, innerBoundary = "") {
+                console.log(uuid, outerBoundary, innerBoundary);
+            };
+
+            PlotServiceFeature = function (overlay, title, uuid, url, filter) {
+
+            };
+
+            PlotServiceMeasurement = function (message) {
+
+            };
+
+            PlotServiceGeocoding = function (message) {
+
+            };
         };
 
         /*

@@ -13,22 +13,6 @@
     <br />
     <code>Groups</code>: <br />@((MarkupString)groups)
     <br />
-    <br />
-
-    <EditForm Model="Preference" id="savePreference">
-        <label for="savePreferenceKey">Key</label>
-        <InputText id="savePreferenceKey" @bind-Value="Preference.Key" class="form-control" />
-        <br />
-        <label for="savePreferenceValue">Value</label>
-        <InputTextArea id="savePreferenceValue" @bind-Value="Preference.Value" class="form-control" rows="5" />
-
-        <button class="btn btn-primary" @onclick="onGetPreference">Get</button>&nbsp;
-        <button class="btn btn-primary" @onclick="onSetPreference">Set</button>&nbsp;
-        <button class="btn btn-primary" @onclick="onDeletePreference">Delete</button>
-    </EditForm>
-    <br />
-    <br />
-    @((MarkupString)text)
 </p>
 
 @code {
@@ -36,7 +20,6 @@
     private string uuid = "";
     private string user = "";
     private string groups = "";
-    private string text = "";
 
     protected override async Task OnInitializedAsync()
     {
@@ -109,64 +92,6 @@
     {
         JS.InvokeVoidAsync("interopInterface.INTEROPMessageHandler.deregister");
         _objeRef.Dispose();
-    }
-
-    public class PreferenceObject
-    {
-
-        public string Key { get; set; }
-
-        public string Value { get; set; }
-    }
-    public PreferenceObject Preference = new PreferenceObject();
-
-    private async Task onGetPreference()
-    {
-        await JS.InvokeVoidAsync("interopInterface.INTEROPMessageHandler.start", "owf.preference.get", "GetUserPreference",
-        true, "owf",
-        Preference.Key);
-    }
-
-    [JSInvokable]
-    public async Task GetUserPreference(string message)
-    {
-        System.Console.WriteLine(message);
-        text = "GetUserPreference -> " + JSONServices.JSONAsHTMLString(message);
-        base.StateHasChanged();
-
-        //JS.InvokeVoidAsync("interopInterface.INTEROPMessageHandler.stop", "owf.preference.get");
-    }
-
-    private async Task onSetPreference()
-    {
-        await JS.InvokeVoidAsync("interopInterface.INTEROPMessageHandler.start", "owf.preference.set", "SetUserPreference",
-        true, "owf",
-        Preference.Key, Preference.Value);
-    }
-
-    [JSInvokable]
-    public async Task SetUserPreference(string message)
-    {
-        text = "SetUserPreference -> " + JSONServices.JSONAsHTMLString(message);
-        base.StateHasChanged();
-
-        //JS.InvokeVoidAsync("interopInterface.INTEROPMessageHandler.stop", "owf.preference.set");
-    }
-
-    private async Task onDeletePreference()
-    {
-        await JS.InvokeVoidAsync("interopInterface.INTEROPMessageHandler.start", "owf.preference.delete",
-        "DeleteUserPreference", true, "owf",
-        Preference.Key);
-    }
-
-    [JSInvokable]
-    public async Task DeleteUserPreference(string message)
-    {
-        text = "DeleteUserPreference -> " + JSONServices.JSONAsHTMLString(message);
-        base.StateHasChanged();
-
-        //JS.InvokeVoidAsync("interopInterface.INTEROPMessageHandler.stop", "owf.preference.delete");
     }
 
 }

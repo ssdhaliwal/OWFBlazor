@@ -98,13 +98,12 @@ using OWFBlazorDemo.Services;
         }
         #pragma warning restore 1998
 #nullable restore
-#line 34 "E:\home\development\blazer\OWFBlazorDemo\Pages\OWFInterface.razor"
+#line 18 "E:\home\development\blazer\OWFBlazorDemo\Pages\OWFInterface.razor"
        
     private readonly DotNetObjectReference<OWFInterface> _objeRef;
     private string uuid = "";
     private string user = "";
     private string groups = "";
-    private string text = "";
 
     protected override async Task OnInitializedAsync()
     {
@@ -177,64 +176,6 @@ using OWFBlazorDemo.Services;
     {
         JS.InvokeVoidAsync("interopInterface.INTEROPMessageHandler.deregister");
         _objeRef.Dispose();
-    }
-
-    public class PreferenceObject
-    {
-
-        public string Key { get; set; }
-
-        public string Value { get; set; }
-    }
-    public PreferenceObject Preference = new PreferenceObject();
-
-    private async Task onGetPreference()
-    {
-        await JS.InvokeVoidAsync("interopInterface.INTEROPMessageHandler.start", "owf.preference.get", "GetUserPreference",
-        true, "owf",
-        Preference.Key);
-    }
-
-    [JSInvokable]
-    public async Task GetUserPreference(string message)
-    {
-        System.Console.WriteLine(message);
-        text = "GetUserPreference -> " + JSONServices.JSONAsHTMLString(message);
-        base.StateHasChanged();
-
-        //JS.InvokeVoidAsync("interopInterface.INTEROPMessageHandler.stop", "owf.preference.get");
-    }
-
-    private async Task onSetPreference()
-    {
-        await JS.InvokeVoidAsync("interopInterface.INTEROPMessageHandler.start", "owf.preference.set", "SetUserPreference",
-        true, "owf",
-        Preference.Key, Preference.Value);
-    }
-
-    [JSInvokable]
-    public async Task SetUserPreference(string message)
-    {
-        text = "SetUserPreference -> " + JSONServices.JSONAsHTMLString(message);
-        base.StateHasChanged();
-
-        //JS.InvokeVoidAsync("interopInterface.INTEROPMessageHandler.stop", "owf.preference.set");
-    }
-
-    private async Task onDeletePreference()
-    {
-        await JS.InvokeVoidAsync("interopInterface.INTEROPMessageHandler.start", "owf.preference.delete",
-        "DeleteUserPreference", true, "owf",
-        Preference.Key);
-    }
-
-    [JSInvokable]
-    public async Task DeleteUserPreference(string message)
-    {
-        text = "DeleteUserPreference -> " + JSONServices.JSONAsHTMLString(message);
-        base.StateHasChanged();
-
-        //JS.InvokeVoidAsync("interopInterface.INTEROPMessageHandler.stop", "owf.preference.delete");
     }
 
 

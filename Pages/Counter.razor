@@ -15,37 +15,8 @@
 <br />
 <br />
 
-<code>App State Storage: Child List</code>
-<EditForm Model="MyList" id="myList">
-    <label for="myListValue">Key</label>
-    <InputText id="myListValue" @bind-Value="MyList.Value" class="form-control" />
-    <br />
-
-    <button class="btn btn-primary" @onclick="onAddList">Add (Value)</button>&nbsp;
-    <button class="btn btn-primary" @onclick="onAddListFromList">Add (CSV-List)</button>&nbsp;<br />
-    <button class="btn btn-primary" @onclick="onSubtractList">Subtract (Value)</button>&nbsp;
-    <button class="btn btn-primary" @onclick="onSubtractListPartial">Subtract (Value-Partial)</button>&nbsp;
-    <button class="btn btn-primary" @onclick="onSubtractListFromList">Subtract (CSV-List)</button>&nbsp;<br />
-    <button class="btn btn-primary" @onclick="onCheckList">Check (Value)</button>&nbsp;
-    <button class="btn btn-primary" @onclick="onCheckListPartial">Check (Value-Partial)</button>&nbsp;
-    <button class="btn btn-primary" @onclick="onCheckListFromListMatched">Check (CSV-List Matched)</button>&nbsp;
-    <button class="btn btn-primary" @onclick="onCheckListFromList">Check (CSV-List Not-Matched)</button>&nbsp;<br />
-    <button class="btn btn-primary" @onclick="onListAll">List (ALL)</button>&nbsp;
-    <button class="btn btn-primary" @onclick="onList">List (Value)</button>&nbsp;
-    <button class="btn btn-primary" @onclick="onListPartial">List (Value-Partial)</button>&nbsp;
-    <button class="btn btn-primary" @onclick="onListFromListMatched">List (CSV-List Matched)</button>&nbsp;
-    <button class="btn btn-primary" @onclick="onListFromList">List (CSV-List Not-Matched)</button>&nbsp;
-</EditForm>
-<br />
-<br />
-
-<p>
-    <code>List</code>: <br />@((MarkupString)text)
-</p>
-
 @code {
     private int currentCount = 0;
-    private string text { get; set; }
 
     [Parameter]
     public int IncrementAmount { get; set; } = 1;
@@ -97,93 +68,6 @@
 
         await JS.InvokeVoidAsync("interopInterface.INTEROPMessageHandler.broadcast", "blazor.counter", "{'counter': " +
         currentCount + ",'status': 'reset'}");
-    }
-
-    public class MyListObject
-    {
-        public string Value { get; set; }
-    }
-    public MyListObject MyList = new MyListObject();
-
-    private async Task onAddList()
-    {
-        // adding one value
-        AppState.add("MyList", MyList.Value);
-        onListAll();
-    }
-
-    private async Task onAddListFromList() {
-        // adding multiple values, comma separated
-        AppState.add("MyList", (MyList.Value).Split(",").ToList<string>());
-        onListAll();
-    }
-    private async Task onSubtractList() {
-        // subtracting one value
-        AppState.subtract("MyList", MyList.Value);
-        onListAll();
-    }
-    private async Task onSubtractListPartial() {
-        // subtracting one value
-        AppState.subtract("MyList", MyList.Value, true);
-        onListAll();
-    }
-    private async Task onSubtractListFromList() {
-        // subtracting multiple values, comma separated
-        AppState.subtract("MyList", (MyList.Value).Split(",").ToList<string>());
-        onListAll();
-    }
-    private async Task onCheckList() {
-        // check one value
-        onListAll();
-
-        bool checkResult = AppState.check("MyList", MyList.Value);
-        text += "<br />(check) -> " + checkResult.ToString();
-        base.StateHasChanged();
-    }
-    private async Task onCheckListPartial() {
-        // check one value (partial)
-        onListAll();
-        bool checkResult = AppState.check("MyList", MyList.Value, true);
-        text += "<br />(check) -> " + checkResult.ToString();
-        base.StateHasChanged();
-    }
-    private async Task onCheckListFromListMatched() {
-        // check multiple values, comma separated (all exist)
-        onListAll();
-        bool checkResult = AppState.check("MyList", (MyList.Value).Split(",").ToList<string>(), true);
-        text += "<br />(check) -> " + checkResult.ToString();
-        base.StateHasChanged();
-    }
-    private async Task onCheckListFromList() {
-        // check multiple values, comma separated (any exist)
-        onListAll();
-        bool checkResult = AppState.check("MyList", (MyList.Value).Split(",").ToList<string>());
-        text += "<br />(check) -> " + checkResult.ToString();
-        base.StateHasChanged();
-    }
-    private async Task onListAll() {
-        text = "(list) -> " + string.Join(",", (AppState.list("MyList")).Select(x => x.ToString()).ToArray());
-        base.StateHasChanged();
-    }
-    private async Task onList() {
-        onListAll();
-        text += "<br />(result) -> " + string.Join(",", AppState.list("MyList", MyList.Value).Select(x => x.ToString()).ToArray());
-        base.StateHasChanged();
-    }
-    private async Task onListPartial() {
-        onListAll();
-        text += "<br />(result) -> " + string.Join(",", AppState.list("MyList", MyList.Value, true).Select(x => x.ToString()).ToArray());
-        base.StateHasChanged();
-    }
-    private async Task onListFromListMatched() {
-        onListAll();
-        text += "<br />(result) -> " + string.Join(",", (AppState.list("MyList", (MyList.Value).Split(",").ToList<string>())).Select(x => x.ToString()).ToArray());
-        base.StateHasChanged();
-    }
-    private async Task onListFromList() {
-        onListAll();
-        text += "<br />(result) -> " + string.Join(",", (AppState.list("MyList", (MyList.Value).Split(",").ToList<string>(), false)).Select(x => x.ToString()).ToArray());
-        base.StateHasChanged();
     }
 
     async void IDisposable.Dispose()
