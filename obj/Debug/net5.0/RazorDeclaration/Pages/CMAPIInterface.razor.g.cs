@@ -133,7 +133,7 @@ using OWFBlazorDemo.Services;
     {
         if (firstRender)
         {
-            string initialization = (string)AppState.get("initializtion", "false");
+            string initialization = (string)AppState.get("initialization", "false");
             if (initialization == "false") {
             NavigationManager.NavigateTo("/");  
             }
@@ -258,13 +258,13 @@ using OWFBlazorDemo.Services;
 
     async void IDisposable.Dispose()
     {
-        JS.InvokeVoidAsync("interopInterface.INTEROPMessageHandler.stop", "map.status.view");
-        JS.InvokeVoidAsync("interopInterface.INTEROPMessageHandler.stop", "map.view.clicked");
-        JS.InvokeVoidAsync("interopInterface.INTEROPMessageHandler.deregister");
+        await JS.InvokeVoidAsync("interopInterface.INTEROPMessageHandler.stop", "map.status.view");
+        await JS.InvokeVoidAsync("interopInterface.INTEROPMessageHandler.stop", "map.view.clicked");
+        await JS.InvokeVoidAsync("interopInterface.INTEROPMessageHandler.deregister");
         _objeRef.Dispose();
 
         // start subscriptions
-        JS.InvokeVoidAsync("interopInterface.UnregisterEvents");
+        await JS.InvokeVoidAsync("interopInterface.UnregisterEvents");
     }
 
 #line default

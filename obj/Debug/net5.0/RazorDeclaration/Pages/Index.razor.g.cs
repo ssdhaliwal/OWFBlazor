@@ -110,7 +110,7 @@ using OWFBlazorDemo.Shared;
                 AppState.reset();
             }
 
-            AppState.set("initializtion", "true");
+            AppState.set("initialization", "true");
         }
     }
 

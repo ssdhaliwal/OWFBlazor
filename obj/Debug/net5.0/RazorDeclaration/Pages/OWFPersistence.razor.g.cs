@@ -134,7 +134,7 @@ using OWFBlazorDemo.Services;
     {
         if (firstRender)
         {
-            string initialization = (string)AppState.get("initializtion", "false");
+            string initialization = (string)AppState.get("initialization", "false");
             if (initialization == "false") {
             NavigationManager.NavigateTo("/");  
             }
@@ -198,7 +198,7 @@ using OWFBlazorDemo.Services;
 
     async void IDisposable.Dispose()
     {
-        JS.InvokeVoidAsync("interopInterface.INTEROPMessageHandler.deregister");
+        await JS.InvokeVoidAsync("interopInterface.INTEROPMessageHandler.deregister");
         _objeRef.Dispose();
     }
 
