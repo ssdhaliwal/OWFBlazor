@@ -2,6 +2,7 @@
 @using OWFBlazorDemo.Services
 @implements IDisposable
 @inject IJSRuntime JS
+@inject NavigationManager NavigationManager
 @inject OWFBlazorDemo.Services.AppState AppState
 
 <h1>App State Storage: Counter</h1>
@@ -35,6 +36,11 @@
     {
         if (firstRender)
         {
+            string initialization = (string)AppState.get("initializtion", "false");
+            if (initialization == "false") {
+                NavigationManager.NavigateTo("/");  
+            }
+
             AppState.set("counter", 0);
         }
     }

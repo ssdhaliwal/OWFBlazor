@@ -21,62 +21,69 @@ using System.Net.Http;
 #nullable disable
 #nullable restore
 #line 2 "E:\home\development\blazer\OWFBlazorDemo\_Imports.razor"
-using Microsoft.AspNetCore.Authorization;
+using System.Net.Http.Json;
 
 #line default
 #line hidden
 #nullable disable
 #nullable restore
 #line 3 "E:\home\development\blazer\OWFBlazorDemo\_Imports.razor"
-using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Authorization;
 
 #line default
 #line hidden
 #nullable disable
 #nullable restore
 #line 4 "E:\home\development\blazer\OWFBlazorDemo\_Imports.razor"
-using Microsoft.AspNetCore.Components.Forms;
+using Microsoft.AspNetCore.Components.Authorization;
 
 #line default
 #line hidden
 #nullable disable
 #nullable restore
 #line 5 "E:\home\development\blazer\OWFBlazorDemo\_Imports.razor"
-using Microsoft.AspNetCore.Components.Routing;
+using Microsoft.AspNetCore.Components.Forms;
 
 #line default
 #line hidden
 #nullable disable
 #nullable restore
 #line 6 "E:\home\development\blazer\OWFBlazorDemo\_Imports.razor"
-using Microsoft.AspNetCore.Components.Web;
+using Microsoft.AspNetCore.Components.Routing;
 
 #line default
 #line hidden
 #nullable disable
 #nullable restore
 #line 7 "E:\home\development\blazer\OWFBlazorDemo\_Imports.razor"
-using Microsoft.AspNetCore.Components.Web.Virtualization;
+using Microsoft.AspNetCore.Components.Web;
 
 #line default
 #line hidden
 #nullable disable
 #nullable restore
 #line 8 "E:\home\development\blazer\OWFBlazorDemo\_Imports.razor"
-using Microsoft.JSInterop;
+using Microsoft.AspNetCore.Components.Web.Virtualization;
 
 #line default
 #line hidden
 #nullable disable
 #nullable restore
 #line 9 "E:\home\development\blazer\OWFBlazorDemo\_Imports.razor"
-using OWFBlazorDemo;
+using Microsoft.JSInterop;
 
 #line default
 #line hidden
 #nullable disable
 #nullable restore
 #line 10 "E:\home\development\blazer\OWFBlazorDemo\_Imports.razor"
+using OWFBlazorDemo;
+
+#line default
+#line hidden
+#nullable disable
+#nullable restore
+#line 11 "E:\home\development\blazer\OWFBlazorDemo\_Imports.razor"
 using OWFBlazorDemo.Shared;
 
 #line default
@@ -98,7 +105,7 @@ using OWFBlazorDemo.Services;
         }
         #pragma warning restore 1998
 #nullable restore
-#line 29 "E:\home\development\blazer\OWFBlazorDemo\Pages\OWFPersistence.razor"
+#line 30 "E:\home\development\blazer\OWFBlazorDemo\Pages\OWFPersistence.razor"
        
     private readonly DotNetObjectReference<OWFPersistence> _objeRef;
     private string uuid = "";
@@ -127,6 +134,11 @@ using OWFBlazorDemo.Services;
     {
         if (firstRender)
         {
+            string initialization = (string)AppState.get("initializtion", "false");
+            if (initialization == "false") {
+            NavigationManager.NavigateTo("/");  
+            }
+
             await JS.InvokeVoidAsync("interopInterface.INTEROPMessageHandler.register", _objeRef);
         }
     }
@@ -146,7 +158,6 @@ using OWFBlazorDemo.Services;
     [JSInvokable]
     public async Task GetUserPreference(string message)
     {
-        System.Console.WriteLine(message);
         text = "GetUserPreference -> " + JSONServices.JSONAsHTMLString(message);
         base.StateHasChanged();
 
@@ -195,6 +206,7 @@ using OWFBlazorDemo.Services;
 #line hidden
 #nullable disable
         [global::Microsoft.AspNetCore.Components.InjectAttribute] private OWFBlazorDemo.Services.AppState AppState { get; set; }
+        [global::Microsoft.AspNetCore.Components.InjectAttribute] private NavigationManager NavigationManager { get; set; }
         [global::Microsoft.AspNetCore.Components.InjectAttribute] private IJSRuntime JS { get; set; }
     }
 }

@@ -2,6 +2,7 @@
 @using OWFBlazorDemo.Services
 @implements IDisposable
 @inject IJSRuntime JS
+@inject NavigationManager NavigationManager
 @inject OWFBlazorDemo.Services.AppState AppState
 
 <code>App State Storage: Child List</code>
@@ -52,6 +53,10 @@
     {
         if (firstRender)
         {
+            string initialization = (string)AppState.get("initializtion", "false");
+            if (initialization == "false") {
+            NavigationManager.NavigateTo("/");  
+            }
         }
     }
 

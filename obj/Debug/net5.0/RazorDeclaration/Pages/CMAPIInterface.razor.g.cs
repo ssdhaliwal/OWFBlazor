@@ -21,62 +21,69 @@ using System.Net.Http;
 #nullable disable
 #nullable restore
 #line 2 "E:\home\development\blazer\OWFBlazorDemo\_Imports.razor"
-using Microsoft.AspNetCore.Authorization;
+using System.Net.Http.Json;
 
 #line default
 #line hidden
 #nullable disable
 #nullable restore
 #line 3 "E:\home\development\blazer\OWFBlazorDemo\_Imports.razor"
-using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Authorization;
 
 #line default
 #line hidden
 #nullable disable
 #nullable restore
 #line 4 "E:\home\development\blazer\OWFBlazorDemo\_Imports.razor"
-using Microsoft.AspNetCore.Components.Forms;
+using Microsoft.AspNetCore.Components.Authorization;
 
 #line default
 #line hidden
 #nullable disable
 #nullable restore
 #line 5 "E:\home\development\blazer\OWFBlazorDemo\_Imports.razor"
-using Microsoft.AspNetCore.Components.Routing;
+using Microsoft.AspNetCore.Components.Forms;
 
 #line default
 #line hidden
 #nullable disable
 #nullable restore
 #line 6 "E:\home\development\blazer\OWFBlazorDemo\_Imports.razor"
-using Microsoft.AspNetCore.Components.Web;
+using Microsoft.AspNetCore.Components.Routing;
 
 #line default
 #line hidden
 #nullable disable
 #nullable restore
 #line 7 "E:\home\development\blazer\OWFBlazorDemo\_Imports.razor"
-using Microsoft.AspNetCore.Components.Web.Virtualization;
+using Microsoft.AspNetCore.Components.Web;
 
 #line default
 #line hidden
 #nullable disable
 #nullable restore
 #line 8 "E:\home\development\blazer\OWFBlazorDemo\_Imports.razor"
-using Microsoft.JSInterop;
+using Microsoft.AspNetCore.Components.Web.Virtualization;
 
 #line default
 #line hidden
 #nullable disable
 #nullable restore
 #line 9 "E:\home\development\blazer\OWFBlazorDemo\_Imports.razor"
-using OWFBlazorDemo;
+using Microsoft.JSInterop;
 
 #line default
 #line hidden
 #nullable disable
 #nullable restore
 #line 10 "E:\home\development\blazer\OWFBlazorDemo\_Imports.razor"
+using OWFBlazorDemo;
+
+#line default
+#line hidden
+#nullable disable
+#nullable restore
+#line 11 "E:\home\development\blazer\OWFBlazorDemo\_Imports.razor"
 using OWFBlazorDemo.Shared;
 
 #line default
@@ -98,7 +105,7 @@ using OWFBlazorDemo.Services;
         }
         #pragma warning restore 1998
 #nullable restore
-#line 54 "E:\home\development\blazer\OWFBlazorDemo\Pages\CMAPIInterface.razor"
+#line 55 "E:\home\development\blazer\OWFBlazorDemo\Pages\CMAPIInterface.razor"
        
     private readonly DotNetObjectReference<CMAPIInterface> _objeRef;
     private string uuid = "";
@@ -126,6 +133,11 @@ using OWFBlazorDemo.Services;
     {
         if (firstRender)
         {
+            string initialization = (string)AppState.get("initializtion", "false");
+            if (initialization == "false") {
+            NavigationManager.NavigateTo("/");  
+            }
+
             await JS.InvokeVoidAsync("interopInterface.INTEROPMessageHandler.register", _objeRef);
 
             // start subscriptions
@@ -162,6 +174,26 @@ using OWFBlazorDemo.Services;
     {
         string uuid = Guid.NewGuid().ToString();
         await JS.InvokeVoidAsync("interopInterface.shared.cmapiInterface.PlotMarker", MapInfo.Overlay, MapInfo.Feature, uuid, MapInfo.Value);
+
+        Random rnd = new Random();
+
+        int i = 0, latOffset = 0, lonOffset = 0, lat = 0, lon = 0;
+        string[] latlonArray = MapInfo.Value.Split(",");
+        lon = (int)Math.Truncate(float.Parse(latlonArray[0]));
+        lat = (int)Math.Truncate(float.Parse(latlonArray[1]));
+
+        var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+        while (stopwatch.Elapsed < TimeSpan.FromSeconds(10))
+        {
+            i++;
+
+            lonOffset  = rnd.Next(0, 999999);
+            latOffset  = rnd.Next(0, 999999);
+
+            await Task.Delay(1);
+            await JS.InvokeVoidAsync("interopInterface.shared.cmapiInterface.PlotMarker", MapInfo.Overlay, MapInfo.Feature, uuid, 
+                ((lon + "." + lonOffset) + "," + (lat + "." + latOffset)));
+        }
     }
     private async Task onPlotLineString()
     {
@@ -195,6 +227,7 @@ using OWFBlazorDemo.Services;
 #line hidden
 #nullable disable
         [global::Microsoft.AspNetCore.Components.InjectAttribute] private OWFBlazorDemo.Services.AppState AppState { get; set; }
+        [global::Microsoft.AspNetCore.Components.InjectAttribute] private NavigationManager NavigationManager { get; set; }
         [global::Microsoft.AspNetCore.Components.InjectAttribute] private IJSRuntime JS { get; set; }
     }
 }

@@ -152,8 +152,8 @@
                 this.interopInterface = interopInterface;
 
                 this.shared = interopInterface.shared;
-                this.jsUtilities = interopInterface.jsUtilities;
-                this.owfInterface = interopInterface.owfInterface;
+                this.jsUtilities = interopInterface.shared.jsUtilities;
+                this.owfInterface = interopInterface.shared.owfInterface;
             };
 
             GetUserUUID = function() {
@@ -173,7 +173,7 @@
                     self.interopInterface.notifyDotnet("owf.user.uuid", self.shared.userProfile.uuid);
                 } else {
                     window.setTimeout(function() {
-                        self.shared.userProfile.uuid = self.guid();
+                        self.shared.userProfile.uuid = self.jsUtilities.guid();
                         self.interopInterface.notifyDotnet("owf.user.uuid", self.shared.userProfile.uuid);
 
                         self.SetUserPreference("uuid", self.shared.userProfile.uuid);
@@ -188,7 +188,7 @@
                 let self = this;
                 if (status !== 404) {
                     window.setTimeout(function() {
-                        self.shared.userProfile.uuid = self.guid();
+                        self.shared.userProfile.uuid = self.jsUtilities.guid();
                         self.interopInterface.notifyDotnet("owf.user.uuid", self.shared.userProfile.uuid);
 
                         self.SetUserPreference("uuid", self.shared.userProfile.uuid);
@@ -326,8 +326,8 @@
                 this.interopInterface = interopInterface;
 
                 this.shared = interopInterface.shared;
-                this.jsUtilities = interopInterface.jsUtilities;
-                this.owfInterface = interopInterface.owfInterface;
+                this.jsUtilities = interopInterface.shared.jsUtilities;
+                this.owfInterface = interopInterface.shared.owfInterface;
             };
 
             ReceiveMapStatusView = function (sender, message) {
@@ -367,7 +367,7 @@
                         refreshInterval:"30",
                         zoom:"false",
                         showLabels:"false",
-                        opacity:0.2,
+                        opacity:0.8,
                         transparent:"true",
                         useProxy:"false",
                         mode:"ondemand"

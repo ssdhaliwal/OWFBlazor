@@ -2,6 +2,7 @@
 @using OWFBlazorDemo.Services
 @implements IDisposable
 @inject IJSRuntime JS
+@inject NavigationManager NavigationManager
 @inject OWFBlazorDemo.Services.AppState AppState
 
 <h1><code>OWF</code> Persistence</h1>
@@ -54,6 +55,11 @@
     {
         if (firstRender)
         {
+            string initialization = (string)AppState.get("initializtion", "false");
+            if (initialization == "false") {
+            NavigationManager.NavigateTo("/");  
+            }
+
             await JS.InvokeVoidAsync("interopInterface.INTEROPMessageHandler.register", _objeRef);
         }
     }
@@ -73,7 +79,6 @@
     [JSInvokable]
     public async Task GetUserPreference(string message)
     {
-        System.Console.WriteLine(message);
         text = "GetUserPreference -> " + JSONServices.JSONAsHTMLString(message);
         base.StateHasChanged();
 

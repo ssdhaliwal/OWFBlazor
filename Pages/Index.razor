@@ -19,6 +19,8 @@ APPSTATE: Navigating to this page clears you APP State storage.
             if (AppState != null) {
                 AppState.reset();
             }
+
+            AppState.set("initializtion", "true");
         }
     }
 }

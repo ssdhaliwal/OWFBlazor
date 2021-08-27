@@ -2,6 +2,7 @@
 @using OWFBlazorDemo.Services
 @implements IDisposable
 @inject IJSRuntime JS
+@inject NavigationManager NavigationManager
 @inject OWFBlazorDemo.Services.AppState AppState
 
 <h1><code>CMAPI</code> Interface</h1>
@@ -78,6 +79,11 @@
     {
         if (firstRender)
         {
+            string initialization = (string)AppState.get("initializtion", "false");
+            if (initialization == "false") {
+            NavigationManager.NavigateTo("/");  
+            }
+
             await JS.InvokeVoidAsync("interopInterface.INTEROPMessageHandler.register", _objeRef);
 
             // start subscriptions
@@ -114,6 +120,26 @@
     {
         string uuid = Guid.NewGuid().ToString();
         await JS.InvokeVoidAsync("interopInterface.shared.cmapiInterface.PlotMarker", MapInfo.Overlay, MapInfo.Feature, uuid, MapInfo.Value);
+
+        Random rnd = new Random();
+
+        int i = 0, latOffset = 0, lonOffset = 0, lat = 0, lon = 0;
+        string[] latlonArray = MapInfo.Value.Split(",");
+        lon = (int)Math.Truncate(float.Parse(latlonArray[0]));
+        lat = (int)Math.Truncate(float.Parse(latlonArray[1]));
+
+        var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+        while (stopwatch.Elapsed < TimeSpan.FromSeconds(10))
+        {
+            i++;
+
+            lonOffset  = rnd.Next(0, 999999);
+            latOffset  = rnd.Next(0, 999999);
+
+            await Task.Delay(1);
+            await JS.InvokeVoidAsync("interopInterface.shared.cmapiInterface.PlotMarker", MapInfo.Overlay, MapInfo.Feature, uuid, 
+                ((lon + "." + lonOffset) + "," + (lat + "." + latOffset)));
+        }
     }
     private async Task onPlotLineString()
     {
