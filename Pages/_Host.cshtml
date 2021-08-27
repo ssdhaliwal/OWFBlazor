@@ -392,8 +392,52 @@
                 OWF.Eventing.publish("map.feature.plot", JSON.stringify(payload));
             };
 
-            PlotLineString = function (overlay, title, uuid, coordinates) {
-                console.log(uuid, coordinates);
+            PlotLineString = function (overlay, title, uuid, coordinates, style) {
+                // format kml and cmapi message for marker and publish it
+                let payload = {
+                    overlayId:overlay,
+                    featureId:title.replace(/ /g, "-"),
+                    name:title,
+                    format:"kml",
+                    params:{
+                        serviceType:"feature",
+                        format:"image/png",
+                        refreshInterval:"30",
+                        zoom:"false",
+                        showLabels:"false",
+                        opacity:0.8,
+                        transparent:"true",
+                        useProxy:"false",
+                        mode:"ondemand"
+                    },
+                    zoom:true,
+                    mapId:1,
+                    feature:"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                        "<kml xmlns=\"http://www.opengis.net/kml/2.2\" xmlns:gx=\"http://www.google.com/kml/ext/2.2\" xmlns:kml=\"http://www.opengis.net/kml/2.2\" xmlns:atom=\"http://www.w3.org/2005/Atom\">\n" +
+                        "<Document>\n" +
+                        "    <name>" + overlay.replace(/ /g, "-") + "_" + title.replace(/ /g, "-") + ".kml</name>\n\n" +
+                        "    <Style id=\"redline\">\n" +
+                        "        <LineStyle><color>ff0055ff</color><width>5</width></LineStyle>\n" +
+                        "    </Style>\n" +
+                        "    <Style id=\"blueline\">\n" +
+                        "        <LineStyle><color>07659300</color><width>4</width> </LineStyle>\n" +
+                        "    </Style>\n" +
+                        "    <Style id=\"greenline\">\n" +
+                        "        <LineStyle><color>07930955</color><width>6</width> </LineStyle>\n" +
+                        "    </Style>\n\n" +
+                        "    <Placemark>\n" +
+                        "        <id>" + uuid + "</id>\n\n" +
+                        "        <name>" + title + "</name>\n\n" +
+                        "         <styleUrl>#" + style + "</styleUrl>\n\n" +
+                        "        <LineString>\n" +
+                        "            <coordinates>" + coordinates + "</coordinates>\n" +
+                        "        </LineString>\n\n" +
+                        "    </Placemark>\n\n" +
+                        "</Document>\n" +
+                        "</kml>"
+                }
+
+                OWF.Eventing.publish("map.feature.plot", JSON.stringify(payload));
             };
 
             PlotPolygon = function (overlay, title, uuid, outerBoundary, innerBoundary = "") {

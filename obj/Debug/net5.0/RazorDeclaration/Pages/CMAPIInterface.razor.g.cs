@@ -187,8 +187,8 @@ using OWFBlazorDemo.Services;
         {
             i++;
 
-            lonOffset  = rnd.Next(0, 999999);
-            latOffset  = rnd.Next(0, 999999);
+            lonOffset = rnd.Next(0, 999999);
+            latOffset = rnd.Next(0, 999999);
 
             await Task.Delay(1);
             await JS.InvokeVoidAsync("interopInterface.shared.cmapiInterface.PlotMarker", MapInfo.Overlay, MapInfo.Feature, uuid, 
@@ -198,7 +198,51 @@ using OWFBlazorDemo.Services;
     private async Task onPlotLineString()
     {
         string uuid = Guid.NewGuid().ToString();
-        await JS.InvokeVoidAsync("interopInterface.shared.cmapiInterface.PlotLineString", MapInfo.Overlay, MapInfo.Feature, uuid, MapInfo.Value);
+        await JS.InvokeVoidAsync("interopInterface.shared.cmapiInterface.PlotLineString", MapInfo.Overlay, MapInfo.Feature, uuid, MapInfo.Value, "redline");
+
+        Random rnd = new Random();
+
+        int i = 0, latStartOffset = 0, lonStartOffset = 0, latEndOffset = 0, lonEndOffset = 0, 
+            lonStart = 0, latStart = 0, lonEnd = 0, latEnd = 0, style = 1;
+        string styleColor = "redline";
+        string[] lineArray = MapInfo.Value.Split(" ");
+        if (lineArray.Count() == 2) {
+            string[] latlonStart = lineArray[0].Split(",");
+            string[] latlonEnd = lineArray[1].Split(",");
+
+            lonStart = (int)Math.Truncate(float.Parse(latlonStart[0]));
+            latStart = (int)Math.Truncate(float.Parse(latlonStart[1]));
+
+            lonEnd = (int)Math.Truncate(float.Parse(latlonEnd[0]));
+            latEnd = (int)Math.Truncate(float.Parse(latlonEnd[1]));
+
+            var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+            while (stopwatch.Elapsed < TimeSpan.FromSeconds(10))
+            {
+                i++;
+
+                lonStartOffset = rnd.Next(0, 999999);
+                latStartOffset = rnd.Next(0, 999999);
+
+                lonEndOffset = rnd.Next(0, 999999);
+                latEndOffset = rnd.Next(0, 999999);
+
+                style = rnd.Next(1, 3);
+                if (style == 1) {
+                    styleColor = "redline";
+                } else if (style == 2) {
+                    styleColor = "blueline";
+                } else if (style == 3) {
+                    styleColor = "greenline";
+                }
+
+                await Task.Delay(1000);
+                await JS.InvokeVoidAsync("interopInterface.shared.cmapiInterface.PlotLineString", MapInfo.Overlay, MapInfo.Feature, uuid, 
+                    ((lonStart + "." + lonStartOffset) + "," + (latStart + "." + latStartOffset) + " " + 
+                    (lonEnd + "." + lonEndOffset) + "," + (latEnd + "." + latEndOffset)),
+                    styleColor);
+            }
+        }
     }
     private async Task onPlotPolygon()
     {
