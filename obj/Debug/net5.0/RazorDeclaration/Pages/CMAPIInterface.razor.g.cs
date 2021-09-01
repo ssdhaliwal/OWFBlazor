@@ -105,7 +105,7 @@ using OWFBlazorDemo.Services;
         }
         #pragma warning restore 1998
 #nullable restore
-#line 55 "E:\home\development\blazer\OWFBlazorDemo\Pages\CMAPIInterface.razor"
+#line 56 "E:\home\development\blazer\OWFBlazorDemo\Pages\CMAPIInterface.razor"
        
     private readonly DotNetObjectReference<CMAPIInterface> _objeRef;
     private string uuid = "";
@@ -177,7 +177,7 @@ using OWFBlazorDemo.Services;
 
         Random rnd = new Random();
 
-        int i = 0, latOffset = 0, lonOffset = 0, lat = 0, lon = 0;
+        int i = 1000, latOffset = 0, lonOffset = 0, lat = 0, lon = 0;
         string[] latlonArray = MapInfo.Value.Split(",");
         lon = (int)Math.Truncate(float.Parse(latlonArray[0]));
         lat = (int)Math.Truncate(float.Parse(latlonArray[1]));
@@ -190,8 +190,8 @@ using OWFBlazorDemo.Services;
             lonOffset = rnd.Next(0, 999999);
             latOffset = rnd.Next(0, 999999);
 
-            await Task.Delay(1);
-            await JS.InvokeVoidAsync("interopInterface.shared.cmapiInterface.PlotMarker", MapInfo.Overlay, MapInfo.Feature, uuid, 
+            await Task.Delay(100);
+            await JS.InvokeVoidAsync("interopInterface.shared.cmapiInterface.PlotMarker", MapInfo.Overlay, (MapInfo.Feature + "_" + i), uuid, 
                 ((lon + "." + lonOffset) + "," + (lat + "." + latOffset)));
         }
     }
@@ -202,7 +202,7 @@ using OWFBlazorDemo.Services;
 
         Random rnd = new Random();
 
-        int i = 0, latStartOffset = 0, lonStartOffset = 0, latEndOffset = 0, lonEndOffset = 0, 
+        int i = 2000, latStartOffset = 0, lonStartOffset = 0, latEndOffset = 0, lonEndOffset = 0, 
             lonStart = 0, latStart = 0, lonEnd = 0, latEnd = 0, style = 1;
         string styleColor = "redline";
         string[] lineArray = MapInfo.Value.Split(" ");
@@ -236,8 +236,8 @@ using OWFBlazorDemo.Services;
                     styleColor = "greenline";
                 }
 
-                await Task.Delay(1000);
-                await JS.InvokeVoidAsync("interopInterface.shared.cmapiInterface.PlotLineString", MapInfo.Overlay, MapInfo.Feature, uuid, 
+                await Task.Delay(100);
+                await JS.InvokeVoidAsync("interopInterface.shared.cmapiInterface.PlotLineString", MapInfo.Overlay, (MapInfo.Feature + "_" + i), uuid, 
                     ((lonStart + "." + lonStartOffset) + "," + (latStart + "." + latStartOffset) + " " + 
                     (lonEnd + "." + lonEndOffset) + "," + (latEnd + "." + latEndOffset)),
                     styleColor);

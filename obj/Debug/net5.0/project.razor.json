@@ -12,39 +12,6 @@
   "ProjectWorkspaceState": {
     "TagHelpers": [
       {
-        "HashCode": -1092304203,
-        "Kind": "Components.Component",
-        "Name": "OWFBlazorDemo.Pages.CMAPIInterface",
-        "AssemblyName": "OWFBlazorDemo",
-        "CaseSensitive": true,
-        "TagMatchingRules": [
-          {
-            "TagName": "CMAPIInterface"
-          }
-        ],
-        "Metadata": {
-          "Runtime.Name": "Components.IComponent",
-          "Common.TypeName": "OWFBlazorDemo.Pages.CMAPIInterface"
-        }
-      },
-      {
-        "HashCode": -228226351,
-        "Kind": "Components.Component",
-        "Name": "OWFBlazorDemo.Pages.CMAPIInterface",
-        "AssemblyName": "OWFBlazorDemo",
-        "CaseSensitive": true,
-        "TagMatchingRules": [
-          {
-            "TagName": "OWFBlazorDemo.Pages.CMAPIInterface"
-          }
-        ],
-        "Metadata": {
-          "Runtime.Name": "Components.IComponent",
-          "Common.TypeName": "OWFBlazorDemo.Pages.CMAPIInterface",
-          "Components.NameMatch": "Components.FullyQualifiedNameMatch"
-        }
-      },
-      {
         "HashCode": 1377823841,
         "Kind": "Components.Component",
         "Name": "OWFBlazorDemo.Pages.Index",
@@ -107,39 +74,6 @@
         "Metadata": {
           "Runtime.Name": "Components.IComponent",
           "Common.TypeName": "OWFBlazorDemo.Pages.APPState",
-          "Components.NameMatch": "Components.FullyQualifiedNameMatch"
-        }
-      },
-      {
-        "HashCode": 2018775681,
-        "Kind": "Components.Component",
-        "Name": "OWFBlazorDemo.Pages.OWFInterface",
-        "AssemblyName": "OWFBlazorDemo",
-        "CaseSensitive": true,
-        "TagMatchingRules": [
-          {
-            "TagName": "OWFInterface"
-          }
-        ],
-        "Metadata": {
-          "Runtime.Name": "Components.IComponent",
-          "Common.TypeName": "OWFBlazorDemo.Pages.OWFInterface"
-        }
-      },
-      {
-        "HashCode": 324578296,
-        "Kind": "Components.Component",
-        "Name": "OWFBlazorDemo.Pages.OWFInterface",
-        "AssemblyName": "OWFBlazorDemo",
-        "CaseSensitive": true,
-        "TagMatchingRules": [
-          {
-            "TagName": "OWFBlazorDemo.Pages.OWFInterface"
-          }
-        ],
-        "Metadata": {
-          "Runtime.Name": "Components.IComponent",
-          "Common.TypeName": "OWFBlazorDemo.Pages.OWFInterface",
           "Components.NameMatch": "Components.FullyQualifiedNameMatch"
         }
       },
@@ -226,6 +160,72 @@
         "Metadata": {
           "Runtime.Name": "Components.IComponent",
           "Common.TypeName": "OWFBlazorDemo.Pages.Counter",
+          "Components.NameMatch": "Components.FullyQualifiedNameMatch"
+        }
+      },
+      {
+        "HashCode": 2018775681,
+        "Kind": "Components.Component",
+        "Name": "OWFBlazorDemo.Pages.OWFInterface",
+        "AssemblyName": "OWFBlazorDemo",
+        "CaseSensitive": true,
+        "TagMatchingRules": [
+          {
+            "TagName": "OWFInterface"
+          }
+        ],
+        "Metadata": {
+          "Runtime.Name": "Components.IComponent",
+          "Common.TypeName": "OWFBlazorDemo.Pages.OWFInterface"
+        }
+      },
+      {
+        "HashCode": 324578296,
+        "Kind": "Components.Component",
+        "Name": "OWFBlazorDemo.Pages.OWFInterface",
+        "AssemblyName": "OWFBlazorDemo",
+        "CaseSensitive": true,
+        "TagMatchingRules": [
+          {
+            "TagName": "OWFBlazorDemo.Pages.OWFInterface"
+          }
+        ],
+        "Metadata": {
+          "Runtime.Name": "Components.IComponent",
+          "Common.TypeName": "OWFBlazorDemo.Pages.OWFInterface",
+          "Components.NameMatch": "Components.FullyQualifiedNameMatch"
+        }
+      },
+      {
+        "HashCode": -1092304203,
+        "Kind": "Components.Component",
+        "Name": "OWFBlazorDemo.Pages.CMAPIInterface",
+        "AssemblyName": "OWFBlazorDemo",
+        "CaseSensitive": true,
+        "TagMatchingRules": [
+          {
+            "TagName": "CMAPIInterface"
+          }
+        ],
+        "Metadata": {
+          "Runtime.Name": "Components.IComponent",
+          "Common.TypeName": "OWFBlazorDemo.Pages.CMAPIInterface"
+        }
+      },
+      {
+        "HashCode": -228226351,
+        "Kind": "Components.Component",
+        "Name": "OWFBlazorDemo.Pages.CMAPIInterface",
+        "AssemblyName": "OWFBlazorDemo",
+        "CaseSensitive": true,
+        "TagMatchingRules": [
+          {
+            "TagName": "OWFBlazorDemo.Pages.CMAPIInterface"
+          }
+        ],
+        "Metadata": {
+          "Runtime.Name": "Components.IComponent",
+          "Common.TypeName": "OWFBlazorDemo.Pages.CMAPIInterface",
           "Components.NameMatch": "Components.FullyQualifiedNameMatch"
         }
       },
