@@ -105,7 +105,7 @@ using OWFBlazorDemo.Services;
         }
         #pragma warning restore 1998
 #nullable restore
-#line 56 "E:\home\development\blazer\OWFBlazorDemo\Pages\CMAPIInterface.razor"
+#line 65 "E:\home\development\blazer\OWFBlazorDemo\Pages\CMAPIInterface.razor"
        
     private readonly DotNetObjectReference<CMAPIInterface> _objeRef;
     private string uuid = "";
@@ -191,7 +191,7 @@ using OWFBlazorDemo.Services;
             latOffset = rnd.Next(0, 999999);
 
             await Task.Delay(100);
-            await JS.InvokeVoidAsync("interopInterface.shared.cmapiInterface.PlotMarker", MapInfo.Overlay, (MapInfo.Feature + "_" + i), uuid, 
+            await JS.InvokeVoidAsync("interopInterface.shared.cmapiInterface.PlotMarker", MapInfo.Overlay, MapInfo.Feature, uuid, 
                 ((lon + "." + lonOffset) + "," + (lat + "." + latOffset)));
         }
     }
@@ -237,7 +237,7 @@ using OWFBlazorDemo.Services;
                 }
 
                 await Task.Delay(100);
-                await JS.InvokeVoidAsync("interopInterface.shared.cmapiInterface.PlotLineString", MapInfo.Overlay, (MapInfo.Feature + "_" + i), uuid, 
+                await JS.InvokeVoidAsync("interopInterface.shared.cmapiInterface.PlotLineString", MapInfo.Overlay, MapInfo.Feature, uuid, 
                     ((lonStart + "." + lonStartOffset) + "," + (latStart + "." + latStartOffset) + " " + 
                     (lonEnd + "." + lonEndOffset) + "," + (latEnd + "." + latEndOffset)),
                     styleColor);
@@ -248,12 +248,183 @@ using OWFBlazorDemo.Services;
     {
         string uuid = Guid.NewGuid().ToString();
 
-        // split value to get inner boundaries if specified
-        string[] boundaries = MapInfo.Value.Split(new [] { "\r\n", "\r", "\n" }, StringSplitOptions.RemoveEmptyEntries);
-        string outerBoundary = boundaries[0];
-        string innerBoundary = "";
+        Random rnd = new Random();
 
-        await JS.InvokeVoidAsync("interopInterface.shared.cmapiInterface.PlotPolygon", MapInfo.Overlay, MapInfo.Feature, uuid, outerBoundary, innerBoundary);
+        int i = 2000, latLoc1 = 0, latLoc2 = 0, latLoc3 = 0, latLoc4 = 0, 
+            lonLoc1 = 0, lonLoc2 = 0, lonLoc3 = 0, lonLoc4 = 0, 
+            lonStart = 0, latStart = 0, lonEnd = 0, latEnd = 0, style = 1;
+        string styleColor = "redline";
+        string[] lineArray = MapInfo.Value.Split(" ");
+        if (lineArray.Count() == 2) {
+            string[] latlonStart = lineArray[0].Split(",");
+            string[] latlonEnd = lineArray[1].Split(",");
+
+            lonStart = (int)Math.Truncate(float.Parse(latlonStart[0]));
+            latStart = (int)Math.Truncate(float.Parse(latlonStart[1]));
+
+            lonEnd = (int)Math.Truncate(float.Parse(latlonEnd[0]));
+            latEnd = (int)Math.Truncate(float.Parse(latlonEnd[1]));
+
+            var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+            while (stopwatch.Elapsed < TimeSpan.FromSeconds(10))
+            {
+                i++;
+
+                latLoc1 = rnd.Next(0, 999999);
+                latLoc2 = rnd.Next(0, 999999);
+                latLoc3 = rnd.Next(0, 999999);
+                latLoc4 = rnd.Next(0, 999999);
+
+                lonLoc1 = rnd.Next(0, 999999);
+                lonLoc2 = rnd.Next(0, 999999);
+                lonLoc3 = rnd.Next(0, 999999);
+                lonLoc4 = rnd.Next(0, 999999);
+
+                style = rnd.Next(1, 3);
+                if (style == 1) {
+                    styleColor = "redline";
+                } else if (style == 2) {
+                    styleColor = "blueline";
+                } else if (style == 3) {
+                    styleColor = "greenline";
+                }
+
+                await Task.Delay(100);
+                await JS.InvokeVoidAsync("interopInterface.shared.cmapiInterface.PlotPolygon", MapInfo.Overlay, MapInfo.Feature, uuid, 
+                    (lonStart + "." + lonLoc1) + "," + (latStart + "." + latLoc1) + " " + 
+                    ((lonStart + 2) + "." + lonLoc2) + "," + ((latStart + 2) + "." + latLoc2) + " " + 
+                    ((lonEnd + 2) + "." + lonLoc3) + "," + ((latEnd + 2) + "." + latLoc3) + " " +
+                    (lonEnd + "." + lonLoc4) + "," + (latEnd + "." + latLoc4),
+                    "",
+                    styleColor);
+            }
+        }
+    }
+
+    private async Task onPlotJSONMarker() {
+        string uuid = Guid.NewGuid().ToString();
+
+        Random rnd = new Random();
+
+        int i = 1000, latOffset = 0, lonOffset = 0, lat = 0, lon = 0;
+        string[] latlonArray = MapInfo.Value.Split(",");
+        lon = (int)Math.Truncate(float.Parse(latlonArray[0]));
+        lat = (int)Math.Truncate(float.Parse(latlonArray[1]));
+
+        var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+        while (stopwatch.Elapsed < TimeSpan.FromSeconds(10))
+        {
+            i++;
+
+            lonOffset = rnd.Next(0, 999999);
+            latOffset = rnd.Next(0, 999999);
+
+            await Task.Delay(100);
+            await JS.InvokeVoidAsync("interopInterface.shared.cmapiInterface.PlotJSONMarker", MapInfo.Overlay, MapInfo.Feature, uuid, 
+                (lon + "." + lonOffset), (lat + "." + latOffset));
+        }
+    }
+    private async Task onPlotJSONLineString() {
+        string uuid = Guid.NewGuid().ToString();
+
+        Random rnd = new Random();
+
+        int i = 2000, latStartOffset = 0, lonStartOffset = 0, latEndOffset = 0, lonEndOffset = 0, 
+            lonStart = 0, latStart = 0, lonEnd = 0, latEnd = 0, style = 1;
+        string styleColor = "[255, 0, 0, 255]";
+        string[] lineArray = MapInfo.Value.Split(" ");
+        if (lineArray.Count() == 2) {
+            string[] latlonStart = lineArray[0].Split(",");
+            string[] latlonEnd = lineArray[1].Split(",");
+
+            lonStart = (int)Math.Truncate(float.Parse(latlonStart[0]));
+            latStart = (int)Math.Truncate(float.Parse(latlonStart[1]));
+
+            lonEnd = (int)Math.Truncate(float.Parse(latlonEnd[0]));
+            latEnd = (int)Math.Truncate(float.Parse(latlonEnd[1]));
+
+            var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+            while (stopwatch.Elapsed < TimeSpan.FromSeconds(10))
+            {
+                i++;
+
+                lonStartOffset = rnd.Next(0, 999999);
+                latStartOffset = rnd.Next(0, 999999);
+
+                lonEndOffset = rnd.Next(0, 999999);
+                latEndOffset = rnd.Next(0, 999999);
+
+                style = rnd.Next(1, 3);
+                if (style == 1) {
+                    styleColor = "[255, 0, 0, 255]";
+                } else if (style == 2) {
+                    styleColor = "[43, 134, 44, 255]";
+                } else if (style == 3) {
+                    styleColor = "[43, 87, 198, 255]";
+                }
+
+                await Task.Delay(100);
+                await JS.InvokeVoidAsync("interopInterface.shared.cmapiInterface.PlotJSONLineString", MapInfo.Overlay, MapInfo.Feature, uuid, 
+                    (lonStart + "." + lonStartOffset) + "," + (latStart + "." + latStartOffset),
+                    (lonEnd + "." + lonEndOffset) + "," + (latEnd + "." + latEndOffset),
+                    styleColor);
+            }
+        }
+    }
+    private async Task onPlotJSONPolygon() {
+        string uuid = Guid.NewGuid().ToString();
+
+        Random rnd = new Random();
+
+        int i = 2000, latLoc1 = 0, latLoc2 = 0, latLoc3 = 0, latLoc4 = 0, 
+            lonLoc1 = 0, lonLoc2 = 0, lonLoc3 = 0, lonLoc4 = 0, 
+            lonStart = 0, latStart = 0, lonEnd = 0, latEnd = 0, style = 1;
+        string styleColor = "[255, 0, 0, 255]";
+        string[] lineArray = MapInfo.Value.Split(" ");
+        if (lineArray.Count() == 2) {
+            string[] latlonStart = lineArray[0].Split(",");
+            string[] latlonEnd = lineArray[1].Split(",");
+
+            lonStart = (int)Math.Truncate(float.Parse(latlonStart[0]));
+            latStart = (int)Math.Truncate(float.Parse(latlonStart[1]));
+
+            lonEnd = (int)Math.Truncate(float.Parse(latlonEnd[0]));
+            latEnd = (int)Math.Truncate(float.Parse(latlonEnd[1]));
+
+            var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+            while (stopwatch.Elapsed < TimeSpan.FromSeconds(10))
+            {
+                i++;
+
+                latLoc1 = rnd.Next(0, 999999);
+                latLoc2 = rnd.Next(0, 999999);
+                latLoc3 = rnd.Next(0, 999999);
+                latLoc4 = rnd.Next(0, 999999);
+
+                lonLoc1 = rnd.Next(0, 999999);
+                lonLoc2 = rnd.Next(0, 999999);
+                lonLoc3 = rnd.Next(0, 999999);
+                lonLoc4 = rnd.Next(0, 999999);
+
+                style = rnd.Next(1, 3);
+                if (style == 1) {
+                    styleColor = "[255, 0, 0, 255]";
+                } else if (style == 2) {
+                    styleColor = "[43, 134, 44, 255]";
+                } else if (style == 3) {
+                    styleColor = "[43, 87, 198, 255]";
+                }
+
+                await Task.Delay(100);
+                await JS.InvokeVoidAsync("interopInterface.shared.cmapiInterface.PlotJSONPolygon", MapInfo.Overlay, MapInfo.Feature, uuid, 
+                    "[" + (lonStart + "." + lonLoc1) + "," + (latStart + "." + latLoc1) + "],[" + 
+                    ((lonStart + 2) + "." + lonLoc2) + "," + ((latStart + 2) + "." + latLoc2) + "],[" + 
+                    ((lonEnd + 2) + "." + lonLoc3) + "," + ((latEnd + 2) + "." + latLoc3) + "],[" +
+                    (lonEnd + "." + lonLoc4) + "," + (latEnd + "." + latLoc4) + "]",
+                    "",
+                    styleColor);
+            }
+        }
     }
 
     async void IDisposable.Dispose()

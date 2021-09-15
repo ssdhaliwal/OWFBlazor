@@ -428,7 +428,7 @@
                         "    <Placemark>\n" +
                         "        <id>" + uuid + "</id>\n\n" +
                         "        <name>" + title + "</name>\n\n" +
-                        "         <styleUrl>#" + style + "</styleUrl>\n\n" +
+                        "        <styleUrl>#" + style + "</styleUrl>\n\n" +
                         "        <LineString>\n" +
                         "            <coordinates>" + coordinates + "</coordinates>\n" +
                         "        </LineString>\n\n" +
@@ -440,20 +440,146 @@
                 OWF.Eventing.publish("map.feature.plot", JSON.stringify(payload));
             };
 
-            PlotPolygon = function (overlay, title, uuid, outerBoundary, innerBoundary = "") {
-                console.log(uuid, outerBoundary, innerBoundary);
+            PlotPolygon = function (overlay, title, uuid, outerBoundary, innerBoundary, style) {
+                // format kml and cmapi message for marker and publish it
+                let payload = {
+                    overlayId:overlay,
+                    featureId:title.replace(/ /g, "-"),
+                    name:title,
+                    format:"kml",
+                    params:{
+                        serviceType:"feature",
+                        format:"image/png",
+                        refreshInterval:"30",
+                        zoom:"false",
+                        showLabels:"false",
+                        opacity:0.8,
+                        transparent:"true",
+                        useProxy:"false",
+                        mode:"ondemand"
+                    },
+                    zoom:false,
+                    mapId:1,
+                    feature:"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                        "<kml xmlns=\"http://www.opengis.net/kml/2.2\" xmlns:gx=\"http://www.google.com/kml/ext/2.2\" xmlns:kml=\"http://www.opengis.net/kml/2.2\" xmlns:atom=\"http://www.w3.org/2005/Atom\">\n" +
+                        "<Document>\n" +
+                        "    <name>" + overlay.replace(/ /g, "-") + "_" + title.replace(/ /g, "-") + ".kml</name>\n\n" +
+                        "    <Style id=\"redline\">\n" +
+                        "        <LineStyle><color>ff0055ff</color><width>5</width></LineStyle>\n" +
+                        "    </Style>\n" +
+                        "    <Style id=\"blueline\">\n" +
+                        "        <LineStyle><color>07659300</color><width>4</width> </LineStyle>\n" +
+                        "    </Style>\n" +
+                        "    <Style id=\"greenline\">\n" +
+                        "        <LineStyle><color>07930955</color><width>6</width> </LineStyle>\n" +
+                        "    </Style>\n\n" +
+                        "    <Placemark>\n" +
+                        "        <id>" + uuid + "</id>\n\n" +
+                        "        <name>" + title + "</name>\n\n" +
+                        "        <styleUrl>#" + style + "</styleUrl>\n\n" +
+                        "        <Polygon>\n" +
+                        "            <outerBoundaryIs><LinearRing><coordinates>" + outerBoundary + "</coordinates></LinearRing></outerBoundaryIs>\n" +
+                        ((innerBoundary !== "") ? "            <innerBoundaryIs><LinearRing><coordinates>" + innerBoundary + "</coordinates></LinearRing></innerBoundaryIs>\n" : "") +
+                        "        </Polygon>\n\n" +
+                        "    </Placemark>\n\n" +
+                        "</Document>\n" +
+                        "</kml>"
+                }
+
+                OWF.Eventing.publish("map.feature.plot", JSON.stringify(payload));
+            };
+
+            PlotJSONMarker = function (overlay, title, uuid, longitude, latitude) {
+                // format kml and cmapi message for marker and publish it
+                let payload = {
+                    overlayId:overlay,
+                    featureId:title.replace(/ /g, "-"),
+                    name:title,
+                    format:"jsonobject",
+                    params:{
+                        zoom:"false",
+                        showLabels:"false",
+                        opacity:0.8,
+                        transparent:"true"
+                    },
+                    zoom:false,
+                    mapId:1,
+                    feature: {
+                        features: [
+                            "{\"geometry\":{\"x\":" + longitude + ",\"y\":" + latitude + ", \"spatialReference\":{\"wkid\":4326}},\"attributes\":{\"XCoord\":" + longitude + ", \"YCoord\":" + latitude + ",\"Name\":\"Random Marker\"},\"symbol\":{\"color\":[255,0,0,128], \"size\":12,\"angle\":0,\"xoffset\":0,\"yoffset\":0,\"type\":\"esriSMS\", \"style\":\"esriSMSSquare\",\"outline\":{\"color\":[0,0,0,255],\"width\":1, \"type\":\"esriSLS\",\"style\":\"esriSLSSolid\"}}, \"infoTemplate\":{\"title\":\"JSON Marker\",\"content\":\"Latitude: ${YCoord} <br/> Longitude: ${XCoord} <br/> Plant Name:${Name}\"}}"
+                        ]
+                    }
+                }
+
+                OWF.Eventing.publish("map.feature.plot", JSON.stringify(payload));
+            };
+
+            PlotJSONLineString = function (overlay, title, uuid, start, end, color) {
+                // format kml and cmapi message for marker and publish it
+                let payload = {
+                    overlayId:overlay,
+                    featureId:title.replace(/ /g, "-"),
+                    name:title,
+                    format:"jsonobject",
+                    params:{
+                        zoom:"false",
+                        showLabels:"false",
+                        opacity:0.8,
+                        transparent:"true"
+                    },
+                    zoom:false,
+                    mapId:1,
+                    feature: {
+                        features: [
+                            "{\"geometry\":{\"paths\":[[[" + start + "],[" + end + "]]], \"spatialReference\":{\"wkid\":4326}}, \"symbol\":{\"color\":" + color + ",\"width\":1,\"type\":\"esriSLS\",\"style\":\"esriSLSSolid\"}}"
+                        ]
+                    }
+                }
+
+                OWF.Eventing.publish("map.feature.plot", JSON.stringify(payload));
+            };
+
+            PlotJSONPolygon = function (overlay, title, uuid, outerBoundary, innerBoundary, color) {
+                // format kml and cmapi message for marker and publish it
+                let payload = {
+                    overlayId:overlay,
+                    featureId:title.replace(/ /g, "-"),
+                    name:title,
+                    format:"jsonobject",
+                    params:{
+                        zoom:"false",
+                        showLabels:"false",
+                        opacity:0.8,
+                        transparent:"true"
+                    },
+                    zoom:false,
+                    mapId:1,
+                    feature: {
+                        features: [
+                            "{\"geometry\":{\"rings\":[[" + outerBoundary + "]" +
+                            ((innerBoundary !== "") ? "," + innerBoundary : "") +
+                            "],\"spatialReference\":{\"wkid\":4326}},\"symbol\":{\"color\":" + color + ",\"outline\":{\"color\":[0,0,0,255],\"width\":1,\"type\":\"esriSLS\",\"style\":\"esriSLSSolid\"},\"type\":\"esriSFS\",\"style\":\"esriSFSSolid\"}}"
+                        ]
+                    }
+                }
+
+                OWF.Eventing.publish("map.feature.plot", JSON.stringify(payload));
+            };
+
+            PlotJSONMultiPoint = function (overlay, title, uuid, points) {
+
             };
 
             PlotServiceFeature = function (overlay, title, uuid, url, filter) {
-
+                // tbd
             };
 
             PlotServiceMeasurement = function (message) {
-
+                // tbd
             };
 
             PlotServiceGeocoding = function (message) {
-
+                // tbd
             };
         };
 
