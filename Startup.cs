@@ -53,6 +53,7 @@ namespace OWFBlazorDemo
                 app.UseHsts();
             }
 
+            app.UsePathBase("/v1");
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
