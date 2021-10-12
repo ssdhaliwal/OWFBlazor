@@ -26,6 +26,7 @@
     <link href="css/site.css" rel="stylesheet" />
     <link href="OWFBlazorDemo.styles.css" rel="stylesheet" />
 
+    <script src="js/turf.min.js"></script>
     <script src="js/owf-widget-debug.js"></script>
 </head>
 <body>
@@ -564,6 +565,25 @@
                 }
 
                 OWF.Eventing.publish("map.feature.plot", JSON.stringify(payload));
+            };
+
+            PlotDestination = function (overlay, title, uuid, coordinates, distance, bearing, color) {
+                let self = this;
+                
+                let start = turf.point(JSON.parse("[" + coordinates + "]"));
+                let options = {units: 'miles'};
+
+                let destination = turf.destination(start, distance, bearing, options);
+                self.interopInterface.notifyDotnet("map.plot.distance", JSON.stringify({
+                    "start": start,
+                    "distance": distance,
+                    "bearing": bearing,
+                    "destination": destination}));
+
+                self.PlotJSONLineString(overlay, title, uuid, 
+                    start.geometry.coordinates[0]+","+start.geometry.coordinates[1],
+                    destination.geometry.coordinates[0]+","+destination.geometry.coordinates[1],
+                    color);
             };
 
             PlotJSONMultiPoint = function (overlay, title, uuid, points) {
